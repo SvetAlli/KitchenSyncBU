@@ -1,23 +1,31 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
+using KitchenSync.Data;
+using KitchenSync.Interfaces;
+using KitchenSync.UserInterface.Components;
 
 namespace KitchenSync.UserInterface.Windows;
 
 internal class ConfigurationWindow : Window, IDisposable
 {
+    private readonly InfoBox transparency = new();
+    private readonly InfoBox hotbarSelection = new();
+
+    private static HotbarSettings Settings => Service.Configuration.HotbarSettings;
+
     public ConfigurationWindow() : base("KitchenSync Configuration")
     {
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(400 * (16.0f / 9.0f), 400),
+            MinimumSize = new Vector2(200 * (16.0f / 9.0f), 400),
             MaximumSize = new Vector2(9999,9999)
         };
 
-        Flags |= ImGuiWindowFlags.NoScrollbar;
-        Flags |= ImGuiWindowFlags.NoScrollWithMouse;
+        Flags |= ImGuiWindowFlags.AlwaysVerticalScrollbar;
     }
 
     public void Dispose()
@@ -32,7 +40,15 @@ internal class ConfigurationWindow : Window, IDisposable
 
     public override void Draw()
     {
+        transparency
+            .AddTitle("Transparency")
+            .AddDragFloat("", Settings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
+            .Draw();
 
+        hotbarSelection
+            .AddTitle("Hotbar Selection")
+            .AddList(Settings.Hotbars.Values)
+            .Draw();
     }
 
     public override void OnClose()

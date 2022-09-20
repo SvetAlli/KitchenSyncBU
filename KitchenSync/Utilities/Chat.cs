@@ -2,9 +2,8 @@
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Logging;
-using KitchenSync;
 
-namespace DailyDuty.Utilities;
+namespace KitchenSync.Utilities;
 
 internal static class Chat
 {

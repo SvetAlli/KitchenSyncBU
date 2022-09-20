@@ -1,5 +1,4 @@
 ﻿using System;
-using DailyDuty.Utilities;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace KitchenSync.Utilities;

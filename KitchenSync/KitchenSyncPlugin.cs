@@ -1,4 +1,5 @@
 ﻿using Dalamud.Plugin;
+using KitchenSync.Data;
 using KitchenSync.System;
 
 namespace KitchenSync;
@@ -10,20 +11,21 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
     public KitchenSyncPlugin(DalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
-
+        
         Service.Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Service.Configuration.Initialize(pluginInterface);
 
+        Service.DutyEventManager = new DutyEventManager();
         Service.WindowManager = new WindowManager();
         Service.CommandSystem = new CommandManager();
-
-        Service.LogicModule = new KitchenSyncLogic();
+        Service.HotbarManager = new HotbarManager();
     }
 
     public void Dispose()
     {
         Service.WindowManager.Dispose();
         Service.CommandSystem.Dispose();
-        Service.LogicModule.Dispose();
+        Service.HotbarManager.Dispose();
+        Service.DutyEventManager.Dispose();
     }
 }

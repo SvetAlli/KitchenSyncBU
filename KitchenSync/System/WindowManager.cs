@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DailyDuty.Utilities;
 using Dalamud.Interface.Windowing;
 using KitchenSync.UserInterface.Windows;
+using KitchenSync.Utilities;
 
 namespace KitchenSync.System;
 

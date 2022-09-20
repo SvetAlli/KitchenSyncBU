@@ -8,7 +8,7 @@ namespace KitchenSync.System;
 
 internal class CommandManager : IDisposable
 {
-    private const string SettingsCommand = "/ksink";
+    private const string SettingsCommand = "/ksync";
 
     private readonly List<IPluginCommand> commands = new()
     {

@@ -2,18 +2,22 @@
 using Dalamud.Configuration;
 using Dalamud.Plugin;
 
-namespace KitchenSync.System;
+namespace KitchenSync.Data;
 
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 1;
 
-
+    public HotbarSettings HotbarSettings = new();
 
 
     [NonSerialized]
     private DalamudPluginInterface? pluginInterface;
     public void Initialize(DalamudPluginInterface @interface) => pluginInterface = @interface;
-    public void Save() => pluginInterface!.SavePluginConfig(this);
+    public void Save()
+    {
+        Service.HotbarManager.Refresh();
+        pluginInterface!.SavePluginConfig(this);
+    }
 }
