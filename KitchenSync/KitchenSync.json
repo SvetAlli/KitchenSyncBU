@@ -1,0 +1,15 @@
+{
+  "Author": "MidoriKami",
+  "Name": "KitchenSync",
+  "Punchline": "When level sync'd, make skills you don't have access to more transparent",
+  "Description": "",
+  "Tags": [
+    "utility"
+  ],
+  "CategoryTags": [
+    "utility",
+    "ui"
+  ],
+  "InternalName": "KitchenSync",
+  "RepoUrl": "https://github.com/MidoriKami/KitchenSync",
+}
