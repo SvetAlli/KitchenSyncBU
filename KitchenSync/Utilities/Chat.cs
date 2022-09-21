@@ -11,7 +11,7 @@ internal static class Chat
     {
         var stringBuilder = new SeStringBuilder();
         stringBuilder.AddUiForeground(45);
-        stringBuilder.AddText($"[DailyDuty] ");
+        stringBuilder.AddText($"[KitchenSync] ");
         stringBuilder.AddUiForegroundOff();
         stringBuilder.AddUiForeground(62);
         stringBuilder.AddText($"[{tag}] ");
@@ -46,7 +46,7 @@ internal static class Chat
     {
         var stringBuilder = new SeStringBuilder();
         stringBuilder.AddUiForeground(45);
-        stringBuilder.AddText($"[DailyDuty] ");
+        stringBuilder.AddText($"[KitchenSync] ");
         stringBuilder.AddUiForegroundOff();
         stringBuilder.AddText(message);
 
@@ -63,7 +63,7 @@ internal static class Chat
 
         var stringBuilder = new SeStringBuilder();
         stringBuilder.AddUiForeground(45);
-        stringBuilder.AddText($"[DailyDuty] ");
+        stringBuilder.AddText($"[KitchenSync] ");
         stringBuilder.AddUiForegroundOff();
         stringBuilder.AddUiForeground(62);
         stringBuilder.AddText($"[{tag}] ");

@@ -53,7 +53,7 @@ internal class ConfigurationWindow : Window, IDisposable
 
     public override void OnClose()
     {
-        Service.PluginInterface.UiBuilder.AddNotification("Settings Saved", "DailyDuty", NotificationType.Success);
+        Service.PluginInterface.UiBuilder.AddNotification("Settings Saved", "KitchenSync", NotificationType.Success);
         Service.Configuration.Save();
     }
 
