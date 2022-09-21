@@ -32,6 +32,10 @@ internal unsafe class DutyEventManager : IDisposable
         {
             Task.Delay(1000).ContinueWith(_ => DutyStarted?.Invoke(this, Service.ClientState.TerritoryType) );
         }
+        else
+        {
+            Task.Delay(1000).ContinueWith(_ => DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType) );
+        }
 
         Service.Framework.Update += FrameworkUpdate;
         Service.ClientState.TerritoryChanged += TerritoryChanged;
@@ -56,11 +60,7 @@ internal unsafe class DutyEventManager : IDisposable
 
     private void TerritoryChanged(object? sender, ushort e)
     {
-        if (dutyStartedThisInstance)
-        {
-            dutyStartedThisInstance = false;
-            DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType);
-        }
+        DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType);
     }
 
     private byte ProcessNetworkPacket(void* a1, void* a2, ushort* a3)
