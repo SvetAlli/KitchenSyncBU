@@ -60,6 +60,7 @@ internal unsafe class DutyEventManager : IDisposable
 
     private void TerritoryChanged(object? sender, ushort e)
     {
+        dutyStartedThisInstance = false;
         DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType);
     }
 
