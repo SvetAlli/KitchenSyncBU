@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using KitchenSync.Data;
-using KitchenSync.Interfaces;
 using KitchenSync.UserInterface.Components;
 
 namespace KitchenSync.UserInterface.Windows;
@@ -47,7 +45,7 @@ internal class ConfigurationWindow : Window, IDisposable
 
         hotbarSelection
             .AddTitle("Hotbar Selection")
-            .AddList(Settings.Hotbars.Values)
+            .AddList(Settings.Hotbars)
             .Draw();
     }
 

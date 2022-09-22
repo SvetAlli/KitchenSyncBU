@@ -49,8 +49,7 @@ internal class HotbarManager : IDisposable
     private IEnumerable<HotbarSetting> GetEnabledHotbars()
     {
         return Service.Configuration.HotbarSettings.Hotbars
-            .Where(hotbar => hotbar.Value.Enabled.Value)
-            .Select(hotbar => hotbar.Value);
+            .Where(hotbar => hotbar.Enabled.Value);
     }
 
     private void ApplyTransparency()
