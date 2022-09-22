@@ -1,4 +1,5 @@
 ﻿using System;
+using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -11,9 +12,12 @@ internal unsafe class HotbarModule
 {
     private readonly AddonActionBarBase* actionBar;
     private readonly HotBar* hotbarModule;
+    private readonly string addonName;
 
     public HotbarModule(string addonName)
     {
+        this.addonName = addonName;
+
         actionBar = (AddonActionBarBase*) Service.GameGui.GetAddonByName(addonName, 1);
         hotbarModule = Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[actionBar->RaptureHotbarId];
     }
@@ -28,11 +32,14 @@ internal unsafe class HotbarModule
 
             uiSlot.Icon->AtkResNode.Color.A = 0xFF;
         }
+
+        PluginLog.Debug($"\nHotbarModule: {addonName}\nResetting all Slots");
     }
 
     public void SetActionTransparency(float percentage)
     {
         var hotbarSize = actionBar->SlotCount;
+        var actionString = $"\nHotbarModule: {addonName}\n";
 
         for (var i = 0; i < hotbarSize; ++i)
         {
@@ -43,6 +50,7 @@ internal unsafe class HotbarModule
             {
                 if (IsActionUnavailable(moduleSlot->CommandId))
                 {
+                    actionString += $"Slot[{i:D2}] [{GetAdjustedActionID(moduleSlot->CommandId)}] [{GetActionName(moduleSlot->CommandId)}] setting to [{percentage:P}]\n";
                     uiSlot.Icon->AtkResNode.Color.A = (byte) (0xFF * percentage);
                 }
                 else
@@ -51,6 +59,8 @@ internal unsafe class HotbarModule
                 }
             }
         }
+
+        PluginLog.Debug(actionString);
     }
 
     private bool IsActionUnavailable(uint actionID)
@@ -66,5 +76,18 @@ internal unsafe class HotbarModule
         if (adjustedAction.IsRoleAction) return false;
 
         return adjustedAction.ClassJobLevel > currentLevel;
+    }
+
+    private string GetActionName(uint actionID)
+    {
+        var adjustedActionID = ActionManager.Instance()->GetAdjustedActionId(actionID);
+        var adjustedAction = Service.DataManager.GetExcelSheet<Action>()!.GetRow(adjustedActionID);
+
+        return adjustedAction?.Name.RawString ?? "Unable to Read Name";
+    }
+
+    private uint GetAdjustedActionID(uint actionID)
+    {
+        return ActionManager.Instance()->GetAdjustedActionId(actionID);
     }
 }
