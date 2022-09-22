@@ -21,14 +21,14 @@ internal unsafe class BaseNode
 
     public ResNode GetRootNode()
     {
-        if (node == null) throw new NullReferenceException();
+        if (node == null) return new ResNode(null);
 
         return new ResNode(node->RootNode);
     }
 
     public ResNode GetResNode(uint id)
     {
-        if (node == null) throw new NullReferenceException();
+        if (node == null) return new ResNode(null);
 
         var targetNode = node->GetNodeById(id);
 
@@ -37,7 +37,7 @@ internal unsafe class BaseNode
 
     public ComponentNode GetComponentNode(uint id)
     {
-        if (node == null) throw new NullReferenceException();
+        if (node == null) return new ComponentNode(null);
 
         var targetNode = (AtkComponentNode*) node->GetNodeById(id);
 
@@ -94,18 +94,22 @@ internal unsafe class ComponentNode
 
     public ComponentNode GetComponentNode(uint id)
     {
-        if(componentBase == null) throw new NullReferenceException();
+        if (componentBase == null) return new ComponentNode(null);
 
         var targetNode = Node.GetNodeByID<AtkComponentNode>(componentBase->UldManager, id);
 
         return new ComponentNode(targetNode);
     }
 
-    public AtkImageNode* GetImageNode(uint id)
+    public T* GetNode<T>(uint id) where T : unmanaged
     {
-        return Node.GetNodeByID<AtkImageNode>(componentBase->UldManager, id);
+        return Node.GetNodeByID<T>(componentBase->UldManager, id);
     }
 
+    public AtkComponentNode* GetPointer()
+    {
+        return node;
+    }
 }
 
 internal static unsafe class Node
