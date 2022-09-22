@@ -23,9 +23,9 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
 
     public void Dispose()
     {
+        Service.DutyEventManager.Dispose();
         Service.WindowManager.Dispose();
         Service.CommandSystem.Dispose();
         Service.HotbarManager.Dispose();
-        Service.DutyEventManager.Dispose();
     }
 }
