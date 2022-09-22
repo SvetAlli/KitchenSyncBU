@@ -30,10 +30,12 @@ internal unsafe class DutyEventManager : IDisposable
 
         if (Condition.IsBoundByDuty())
         {
+            PluginLog.Debug("Plugin was loaded while in duty, triggering start delayed 1000ms");
             Task.Delay(1000).ContinueWith(_ => DutyStarted?.Invoke(this, Service.ClientState.TerritoryType) );
         }
         else
         {
+            PluginLog.Debug("Plugin was loaded while not in duty, triggering reset delayed 1000ms");
             Task.Delay(1000).ContinueWith(_ => DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType) );
         }
 
@@ -53,6 +55,7 @@ internal unsafe class DutyEventManager : IDisposable
     {
         if (!dutyStartedThisInstance && Condition.IsBoundByDuty() && Service.Condition[ConditionFlag.InCombat])
         {
+            PluginLog.Debug("Combat Initiated Start Triggered");
             dutyStartedThisInstance = true;
             DutyStarted?.Invoke(this, Service.ClientState.TerritoryType);
         }
@@ -60,6 +63,7 @@ internal unsafe class DutyEventManager : IDisposable
 
     private void TerritoryChanged(object? sender, ushort e)
     {
+        PluginLog.Debug("Zone Change Reset Triggered");
         dutyStartedThisInstance = false;
         DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType);
     }
@@ -80,6 +84,7 @@ internal unsafe class DutyEventManager : IDisposable
                     case 0x40000001:
                         DutyStarted?.Invoke(this, Service.ClientState.TerritoryType);
                         dutyStartedThisInstance = true;
+                        PluginLog.Debug("Duty Commenced Event Triggered");
                         break;
 
                     // Party Wipe
@@ -94,8 +99,9 @@ internal unsafe class DutyEventManager : IDisposable
 
                     // Duty Completed
                     case 0x40000003:
-                        DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType);
-                        dutyStartedThisInstance = false;
+                        //DutyCompleted?.Invoke(this, Service.ClientState.TerritoryType);
+                        //dutyStartedThisInstance = false;
+                        //PluginLog.Debug("Duty Complete Event Triggered");
                         break;
                 }
             }
