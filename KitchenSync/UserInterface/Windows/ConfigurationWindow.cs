@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using KitchenSync.Data;
 using KitchenSync.UserInterface.Components;
+using KitchenSync.Utilities;
 
 namespace KitchenSync.UserInterface.Windows;
 
@@ -45,7 +47,7 @@ internal class ConfigurationWindow : Window, IDisposable
 
         hotbarSelection
             .AddTitle("Hotbar Selection")
-            .AddList(Settings.Hotbars)
+            .AddHotbarConfiguration(Settings.Hotbars)
             .Draw();
     }
 
@@ -54,5 +56,19 @@ internal class ConfigurationWindow : Window, IDisposable
         Service.PluginInterface.UiBuilder.AddNotification("Settings Saved", "KitchenSync", NotificationType.Success);
         Service.Configuration.Save();
     }
+}
 
+internal static class InfoBoxExtensions
+{
+    internal static InfoBox AddHotbarConfiguration(this InfoBox infoBox, Dictionary<HotbarName, Setting<bool>> configurations)
+    {
+        var list = infoBox.BeginList();
+
+        foreach (var entry in configurations)
+        {
+            list.AddConfigCheckbox(entry.Key.ToString(), entry.Value);
+        }
+
+        return list.EndList();
+    }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Dalamud.Logging;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
 
@@ -9,7 +7,7 @@ namespace KitchenSync.System;
 
 internal class HotbarManager : IDisposable
 {
-    private readonly List<HotbarModule> hotbarList = new();
+    private readonly List<Hotbar> hotbarList = new();
     private static HotbarSettings Settings => Service.Configuration.HotbarSettings;
 
     public HotbarManager()
@@ -32,10 +30,6 @@ internal class HotbarManager : IDisposable
 
     public void Refresh()
     {
-        ClearTransparency();
-        hotbarList.Clear();
-        LoadHotbars();
-
         if (Condition.IsBoundByDuty())
         {
             ApplyTransparency();
@@ -46,34 +40,35 @@ internal class HotbarManager : IDisposable
         }
     }
 
-    private IEnumerable<HotbarSetting> GetEnabledHotbars()
-    {
-        return Service.Configuration.HotbarSettings.Hotbars
-            .Where(hotbar => hotbar.Enabled.Value);
-    }
-
     private void ApplyTransparency()
     {
-        foreach (var enabledHotbar in hotbarList)
+        foreach (var hotbar in hotbarList)
         {
-            enabledHotbar.SetActionTransparency(Settings.Transparency.Value);
+            // If this hotbar is enabled
+            if (Settings.Hotbars[hotbar.Name].Value)
+            {
+                hotbar.ApplyTransparency(Settings.Transparency.Value);
+            }
+            else
+            {
+                hotbar.ResetTransparency();
+            }
         }
     }
 
     private void ClearTransparency()
     {
-        foreach (var enabledHotbar in hotbarList)
+        foreach (var hotbar in hotbarList)
         {
-            enabledHotbar.ResetAllTransparency();
+            hotbar.ResetTransparency();
         }
     }
 
     private void LoadHotbars()
     {
-        foreach (var hotbarSetting in GetEnabledHotbars())
+        foreach (var hotbar in Settings.Hotbars)
         {
-            PluginLog.Debug($"Loading Hotbar {hotbarSetting.AddonName}");
-            hotbarList.Add(new HotbarModule(hotbarSetting.AddonName));
+            hotbarList.Add(new Hotbar(hotbar.Key));
         }
     }
 }

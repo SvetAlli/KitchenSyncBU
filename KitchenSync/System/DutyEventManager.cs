@@ -82,9 +82,9 @@ internal unsafe class DutyEventManager : IDisposable
                 {
                     // Duty Commenced
                     case 0x40000001:
+                        PluginLog.Debug("Duty Commenced Event Triggered");
                         DutyStarted?.Invoke(this, Service.ClientState.TerritoryType);
                         dutyStartedThisInstance = true;
-                        PluginLog.Debug("Duty Commenced Event Triggered");
                         break;
 
                     // Party Wipe
