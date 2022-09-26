@@ -147,7 +147,7 @@ public abstract class DrawList<T>
         {
             if (width != 0.0f)
             {
-                ImGui.SetNextItemWidth(width * ImGuiHelpers.GlobalScale);
+                ImGui.SetNextItemWidth(width);
             }
             else
             {

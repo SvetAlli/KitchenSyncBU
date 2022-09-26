@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Dalamud.Interface;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
@@ -24,7 +25,7 @@ internal class ConfigurationWindow : Window, IDisposable
     {
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(200 * (16.0f / 9.0f), 300),
+            MinimumSize = new Vector2(350, 350),
             MaximumSize = new Vector2(9999,9999)
         };
 
@@ -45,35 +46,29 @@ internal class ConfigurationWindow : Window, IDisposable
     {
         baseline
             .AddTitle("Default Available")
-            .AddIcon(454, new Vector2(32.0f), 1.0f)
-            .SameLine()
-            .AddIcon(3064, new Vector2(32.0f), 1.0f)
-            .SameLine()
-            .AddIcon(3662, new Vector2(32.0f), 1.0f)
-            .SameLine()
-            .AddIcon(3454, new Vector2(32.0f), 1.0f)
+            .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
+            .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
+            .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
+            .AddIcon(3454, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
+            .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), 1.0f)
             .Draw();
 
         vanilla
             .AddTitle("Default Level Sync")
-            .AddIcon(454, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
-            .SameLine()
-            .AddIcon(3064, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
-            .SameLine()
-            .AddIcon(3662, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
-            .SameLine()
-            .AddIcon(3454, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
+            .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
+            .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
+            .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
+            .AddIcon(3454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
+            .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f})
             .Draw();
 
         previewMode
             .AddTitle("Modified Level Sync")
-            .AddIcon(454, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
-            .SameLine()
-            .AddIcon(3064, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
-            .SameLine()
-            .AddIcon(3662, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })            
-            .SameLine()
-            .AddIcon(3454, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
+            .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
+            .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
+            .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
+            .AddIcon(3454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
+            .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
             .Draw();
 
         transparency
