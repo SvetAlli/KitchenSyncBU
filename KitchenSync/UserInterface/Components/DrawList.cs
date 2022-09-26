@@ -21,6 +21,46 @@ public abstract class DrawList<T>
         }
     }
 
+    public T AddIcon(uint iconID, Vector2 size, float transparency)
+    {
+        var icon = Service.IconManager.GetIconTexture(iconID);
+
+        if (icon != null)
+        {
+            DrawActions.Add(() =>
+            {
+                ImGui.Image(icon.ImGuiHandle, size, Vector2.Zero, Vector2.One, Vector4.One with {W = transparency});
+            });
+        }
+
+        return DrawListOwner;
+    }
+
+    public T AddIcon(uint iconID, Vector2 size, Vector4 color)
+    {
+        var icon = Service.IconManager.GetIconTexture(iconID);
+
+        if (icon != null)
+        {
+            DrawActions.Add(() =>
+            {
+                ImGui.Image(icon.ImGuiHandle, size, Vector2.Zero, Vector2.One, color);
+            });
+        }
+
+        return DrawListOwner;
+    }
+
+    public T AddDummy(float size)
+    {
+        DrawActions.Add(() =>
+        {
+            ImGuiHelpers.ScaledDummy(size);
+        });
+
+        return DrawListOwner;
+    }
+
     public T AddString(string message, Vector4? color = null)
     {
         if (color == null)

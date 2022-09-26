@@ -29,4 +29,5 @@ internal class Service
     public static System.HotbarManager HotbarManager = null!;
     public static System.DutyEventManager DutyEventManager = null!;
     public static System.FateEventManager FateEventManager = null!;
+    public static System.IconManager IconManager = null!;
 }
