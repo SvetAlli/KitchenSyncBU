@@ -18,6 +18,8 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         Service.DutyEventManager = new DutyEventManager();
         Service.FateEventManager = new FateEventManager();
         Service.IconManager = new IconManager();
+        Service.PlayerEventManager = new PlayerEventManager();
+
         Service.WindowManager = new WindowManager();
         Service.CommandSystem = new CommandManager();
         Service.HotbarManager = new HotbarManager();

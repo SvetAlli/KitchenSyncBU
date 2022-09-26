@@ -30,4 +30,5 @@ internal class Service
     public static System.DutyEventManager DutyEventManager = null!;
     public static System.FateEventManager FateEventManager = null!;
     public static System.IconManager IconManager = null!;
+    public static System.PlayerEventManager PlayerEventManager = null!;
 }
