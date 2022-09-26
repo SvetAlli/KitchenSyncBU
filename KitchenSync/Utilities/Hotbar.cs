@@ -31,7 +31,15 @@ internal unsafe class Hotbar
             var hotbarSlot = HotbarModule->Slot[index];
             var uiSlot = ActionBar->ActionBarSlots + index;
 
-            ApplyTransparencyToSlot(uiSlot, hotbarSlot, percentage);
+            if (ShouldMakeSlotTransparent(hotbarSlot))
+            {
+                ApplyTransparencyToSlot(uiSlot, hotbarSlot, percentage);
+            }
+            else
+            {
+                ResetTransparencyToSlot(uiSlot);
+            }
+
         }
     }
 
@@ -49,12 +57,17 @@ internal unsafe class Hotbar
         }
     }
 
+    private bool ShouldMakeSlotTransparent(HotBarSlot* dataSlot)
+    {
+        if (!IsAction(dataSlot)) return false;
+        if (IsRoleAction(dataSlot)) return false;
+        if (!IsSyncAction(dataSlot)) return false;
+
+        return true;
+    }
+
     private void ApplyTransparencyToSlot(ActionBarSlot* uiSlot, HotBarSlot* dataSlot, float percentage)
     {
-        if (!IsAction(dataSlot)) return;
-        if (IsRoleAction(dataSlot)) return;
-        if (!IsSyncAction(dataSlot)) return;
-
         uiSlot->Icon->AtkResNode.Color.A = (byte) (0xFF * percentage);
     }
 
