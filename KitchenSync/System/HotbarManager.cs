@@ -16,17 +16,25 @@ internal class HotbarManager : IDisposable
 
         Service.DutyEventManager.DutyStarted += OnDutyStart;
         Service.DutyEventManager.DutyCompleted += OnDutyEnd;
+        Service.FateEventManager.FateSyncd += OnFateSync;
+        Service.FateEventManager.FateUnsyncd += OnFateUnsync;
     }
 
     public void Dispose()
     {
         Service.DutyEventManager.DutyStarted -= OnDutyStart;
         Service.DutyEventManager.DutyCompleted -= OnDutyEnd;
+        Service.FateEventManager.FateSyncd -= OnFateSync;
+        Service.FateEventManager.FateUnsyncd -= OnFateUnsync;
     }
 
     private void OnDutyStart(object? sender, uint e) => ApplyTransparency();
 
     private void OnDutyEnd(object? sender, uint e) => ClearTransparency();
+
+    private void OnFateUnsync(object? sender, EventArgs e) => ClearTransparency();
+
+    private void OnFateSync(object? sender, EventArgs e) => ApplyTransparency();
 
     public void Refresh()
     {

@@ -16,6 +16,7 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         Service.Configuration.Initialize(pluginInterface);
 
         Service.DutyEventManager = new DutyEventManager();
+        Service.FateEventManager = new FateEventManager();
         Service.WindowManager = new WindowManager();
         Service.CommandSystem = new CommandManager();
         Service.HotbarManager = new HotbarManager();
@@ -24,6 +25,7 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
     public void Dispose()
     {
         Service.DutyEventManager.Dispose();
+        Service.FateEventManager.Dispose();
         Service.WindowManager.Dispose();
         Service.CommandSystem.Dispose();
         Service.HotbarManager.Dispose();
