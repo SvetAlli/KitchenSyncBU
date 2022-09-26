@@ -18,6 +18,7 @@ internal class HotbarManager : IDisposable
         Service.DutyEventManager.DutyCompleted += OnDutyEnd;
         Service.FateEventManager.FateSyncd += OnFateSync;
         Service.FateEventManager.FateUnsyncd += OnFateUnsync;
+        Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
     }
 
     public void Dispose()
@@ -26,7 +27,10 @@ internal class HotbarManager : IDisposable
         Service.DutyEventManager.DutyCompleted -= OnDutyEnd;
         Service.FateEventManager.FateSyncd -= OnFateSync;
         Service.FateEventManager.FateUnsyncd -= OnFateUnsync;
+        Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
     }
+
+    private void OnLevelChange(object? sender, EventArgs e) => ApplyTransparency();
 
     private void OnDutyStart(object? sender, uint e) => ApplyTransparency();
 
