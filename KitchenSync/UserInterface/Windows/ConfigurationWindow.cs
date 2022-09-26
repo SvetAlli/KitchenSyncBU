@@ -14,14 +14,17 @@ internal class ConfigurationWindow : Window, IDisposable
 {
     private readonly InfoBox transparency = new();
     private readonly InfoBox hotbarSelection = new();
+    private readonly InfoBox previewMode = new();
+    private readonly InfoBox baseline = new();
+    private readonly InfoBox vanilla = new();
 
-    private static HotbarSettings Settings => Service.Configuration.HotbarSettings;
+    private static Configuration Settings => Service.Configuration;
 
     public ConfigurationWindow() : base("KitchenSync Configuration")
     {
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(200 * (16.0f / 9.0f), 400),
+            MinimumSize = new Vector2(200 * (16.0f / 9.0f), 300),
             MaximumSize = new Vector2(9999,9999)
         };
 
@@ -40,14 +43,47 @@ internal class ConfigurationWindow : Window, IDisposable
 
     public override void Draw()
     {
+        baseline
+            .AddTitle("Default Available")
+            .AddIcon(454, new Vector2(32.0f), 1.0f)
+            .SameLine()
+            .AddIcon(3064, new Vector2(32.0f), 1.0f)
+            .SameLine()
+            .AddIcon(3662, new Vector2(32.0f), 1.0f)
+            .SameLine()
+            .AddIcon(3454, new Vector2(32.0f), 1.0f)
+            .Draw();
+
+        vanilla
+            .AddTitle("Default Level Sync")
+            .AddIcon(454, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
+            .SameLine()
+            .AddIcon(3064, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
+            .SameLine()
+            .AddIcon(3662, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
+            .SameLine()
+            .AddIcon(3454, new Vector2(32.0f), new Vector4(0.50f) {W = 1.0f})
+            .Draw();
+
+        previewMode
+            .AddTitle("Modified Level Sync")
+            .AddIcon(454, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
+            .SameLine()
+            .AddIcon(3064, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
+            .SameLine()
+            .AddIcon(3662, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })            
+            .SameLine()
+            .AddIcon(3454, new Vector2(32.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
+            .Draw();
+
         transparency
             .AddTitle("Transparency")
-            .AddDragFloat("", Settings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
+            .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
             .Draw();
 
         hotbarSelection
             .AddTitle("Hotbar Selection")
-            .AddHotbarConfiguration(Settings.Hotbars)
+            .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars)
             .Draw();
     }
 
