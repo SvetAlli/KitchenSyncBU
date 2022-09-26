@@ -2,12 +2,13 @@
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 
 namespace KitchenSync.System;
 
-internal class FateEventManager : IDisposable
+internal unsafe class FateEventManager : IDisposable
 {
-    private delegate IntPtr FateStatusChangedDelegate(IntPtr a1, ushort fateId);
+    private delegate IntPtr FateStatusChangedDelegate(FateManager* fateManager, ushort syncdFateId);
 
     [Signature("48 89 5C 24 ?? 57 48 83 EC 20 0F B7 81 ?? ?? ?? ?? 0F B7 DA", DetourName = nameof(FateStatusChanged))]
     private readonly Hook<FateStatusChangedDelegate>? fateStatusChangedHook = null;
@@ -27,13 +28,13 @@ internal class FateEventManager : IDisposable
         fateStatusChangedHook?.Dispose();
     }
 
-    private IntPtr FateStatusChanged(IntPtr a1, ushort fateId)
+    private IntPtr FateStatusChanged(FateManager* fateManager, ushort syncdFateId)
     {
-        var result = fateStatusChangedHook!.Original(a1, fateId);
+        var result = fateStatusChangedHook!.Original(fateManager, syncdFateId);
 
         try
         {
-            if (fateId == 0)
+            if (syncdFateId == 0)
             {
                 FateUnsyncd?.Invoke(this, EventArgs.Empty);
             }
