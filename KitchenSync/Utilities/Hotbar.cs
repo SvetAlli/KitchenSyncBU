@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using KitchenSync.Data;
-using Lumina.Excel.GeneratedSheets;
+using Action = Lumina.Excel.GeneratedSheets.Action;
 using HotbarPointer = FFXIVClientStructs.FFXIV.Client.UI.Misc.HotBar;
 
 namespace KitchenSync.Utilities;
@@ -17,22 +18,22 @@ internal unsafe class Hotbar
     public HotbarName Name { get; }
 
     private AddonActionBarBase* ActionBar => (AddonActionBarBase*) Service.GameGui.GetAddonByName(Name.GetAddonName(), 1);
-    private HotbarPointer* HotbarModule => Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[ActionBar->RaptureHotbarId];
+    private HotbarPointer* HotbarModule => Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[GetHotbarIndex()];
 
     public Hotbar(HotbarName name)
     {
         Name = name;
+
+        PluginLog.Debug($"{new IntPtr(Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[0]):X8}");
     }
 
     public void ApplyTransparency(float percentage)
     {
         if (ActionBar == null || HotbarModule == null) return;
 
-        var hotbarSize = ActionBar->SlotCount;
-
-        foreach (var index in Enumerable.Range(0, hotbarSize))
+        foreach (var index in Enumerable.Range(0, ActionBar->SlotCount))
         {
-            var hotbarSlot = HotbarModule->Slot[index];
+            var hotbarSlot = HotbarModule->Slot[Name == HotbarName.DoubleCrossR ? index + 8 : index];
             var uiSlot = ActionBar->ActionBarSlots + index;
 
             switch (hotbarSlot->CommandType)
@@ -47,6 +48,27 @@ internal unsafe class Hotbar
                     break;
             }
         }
+    }
+
+    private int GetHotbarIndex()
+    {
+        return Name switch
+        {
+            HotbarName.Hotbar1 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar2 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar3 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar4 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar5 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar6 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar7 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar8 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar9 => ActionBar->RaptureHotbarId,
+            HotbarName.Hotbar10 => ActionBar->RaptureHotbarId,
+            HotbarName.CrossHotbar => ActionBar->RaptureHotbarId,
+            HotbarName.DoubleCrossR => 17,
+            HotbarName.DoubleCrossL => 17,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     public void ResetTransparency()
