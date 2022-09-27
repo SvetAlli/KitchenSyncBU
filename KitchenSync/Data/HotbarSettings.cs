@@ -6,6 +6,7 @@ namespace KitchenSync.Data;
 public class HotbarSettings
 {
     public Setting<float> Transparency = new(0.20f);
+    public Setting<bool> IncludeMacros = new(true);
 
     public Dictionary<HotbarName, Setting<bool>> Hotbars = new()
     {

@@ -18,6 +18,7 @@ internal class ConfigurationWindow : Window, IDisposable
     private readonly InfoBox previewMode = new();
     private readonly InfoBox baseline = new();
     private readonly InfoBox vanilla = new();
+    private readonly InfoBox extraOptions = new();
 
     private static Configuration Settings => Service.Configuration;
 
@@ -74,6 +75,11 @@ internal class ConfigurationWindow : Window, IDisposable
         transparency
             .AddTitle("Transparency")
             .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
+            .Draw();
+
+        extraOptions
+            .AddTitle("Extra Options")
+            .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
             .Draw();
 
         hotbarSelection
