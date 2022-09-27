@@ -14,31 +14,15 @@ internal class HotbarManager : IDisposable
     {
         LoadHotbars();
 
-        Service.DutyEventManager.DutyStarted += OnDutyStart;
-        Service.DutyEventManager.DutyCompleted += OnDutyEnd;
-        Service.FateEventManager.FateSyncd += OnFateSync;
-        Service.FateEventManager.FateUnsyncd += OnFateUnsync;
         Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
     }
 
     public void Dispose()
     {
-        Service.DutyEventManager.DutyStarted -= OnDutyStart;
-        Service.DutyEventManager.DutyCompleted -= OnDutyEnd;
-        Service.FateEventManager.FateSyncd -= OnFateSync;
-        Service.FateEventManager.FateUnsyncd -= OnFateUnsync;
         Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
     }
 
     private void OnLevelChange(object? sender, EventArgs e) => ApplyTransparency();
-
-    private void OnDutyStart(object? sender, uint e) => ApplyTransparency();
-
-    private void OnDutyEnd(object? sender, uint e) => ClearTransparency();
-
-    private void OnFateUnsync(object? sender, EventArgs e) => ClearTransparency();
-
-    private void OnFateSync(object? sender, EventArgs e) => ApplyTransparency();
 
     public void Refresh()
     {

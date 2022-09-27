@@ -15,8 +15,6 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         Service.Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Service.Configuration.Initialize(pluginInterface);
 
-        Service.DutyEventManager = new DutyEventManager();
-        Service.FateEventManager = new FateEventManager();
         Service.IconManager = new IconManager();
         Service.PlayerEventManager = new PlayerEventManager();
 
@@ -27,8 +25,6 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
 
     public void Dispose()
     {
-        Service.DutyEventManager.Dispose();
-        Service.FateEventManager.Dispose();
         Service.IconManager.Dispose();
         Service.PlayerEventManager.Dispose();
 
