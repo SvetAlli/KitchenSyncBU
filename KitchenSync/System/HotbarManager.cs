@@ -15,26 +15,20 @@ internal class HotbarManager : IDisposable
         LoadHotbars();
 
         Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
+        Service.ControllerEventManager.ControllerHotbarUpdate += OnControllerHotbarChange;
     }
 
     public void Dispose()
     {
-        Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
+        Service.PlayerEventManager.PlayerLevelChanged -= OnLevelChange;
+        Service.ControllerEventManager.ControllerHotbarUpdate -= OnControllerHotbarChange;
     }
+
+    private void OnControllerHotbarChange(object? sender, EventArgs e) => ApplyTransparency();
 
     private void OnLevelChange(object? sender, EventArgs e) => ApplyTransparency();
 
-    public void Refresh()
-    {
-        if (Condition.IsBoundByDuty())
-        {
-            ApplyTransparency();
-        }
-        else
-        {
-            ClearTransparency();
-        }
-    }
+    public void Refresh() => ApplyTransparency();
 
     private void ApplyTransparency()
     {
@@ -49,14 +43,6 @@ internal class HotbarManager : IDisposable
             {
                 hotbar.ResetTransparency();
             }
-        }
-    }
-
-    private void ClearTransparency()
-    {
-        foreach (var hotbar in hotbarList)
-        {
-            hotbar.ResetTransparency();
         }
     }
 
