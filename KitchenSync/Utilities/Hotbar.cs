@@ -23,8 +23,6 @@ internal unsafe class Hotbar
     public Hotbar(HotbarName name)
     {
         Name = name;
-
-        PluginLog.Debug($"{new IntPtr(Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[0]):X8}");
     }
 
     public void ApplyTransparency(float percentage)
@@ -65,8 +63,8 @@ internal unsafe class Hotbar
             HotbarName.Hotbar9 => ActionBar->RaptureHotbarId,
             HotbarName.Hotbar10 => ActionBar->RaptureHotbarId,
             HotbarName.CrossHotbar => ActionBar->RaptureHotbarId,
-            HotbarName.DoubleCrossR => 17,
-            HotbarName.DoubleCrossL => 17,
+            HotbarName.DoubleCrossR => ((AddonActionDoubleCrossBase*)ActionBar)->BarTarget,
+            HotbarName.DoubleCrossL => ((AddonActionDoubleCrossBase*)ActionBar)->BarTarget,
             _ => throw new ArgumentOutOfRangeException()
         };
     }
