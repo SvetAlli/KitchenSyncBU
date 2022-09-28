@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Dalamud.Game;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
 
@@ -10,12 +12,35 @@ internal class HotbarManager : IDisposable
     private readonly List<Hotbar> hotbarList = new();
     private static HotbarSettings Settings => Service.Configuration.HotbarSettings;
 
+    private readonly Queue<Hotbar> updateQueue;
+
     public HotbarManager()
     {
         LoadHotbars();
 
-        Service.PlayerEventManager.PlayerLevelChanged += OnLevelChange;
-        Service.ControllerEventManager.ControllerHotbarUpdate += OnControllerHotbarChange;
+        updateQueue = new Queue<Hotbar>(hotbarList);
+
+        Service.Framework.Update += OnFrameworkUpdate;
+    }
+
+    private void OnFrameworkUpdate(Framework framework)
+    {
+        // Controls how many hotbars are updated each frame
+        foreach (var _ in Enumerable.Range(0, 4))
+        {
+            var currentHotbar = updateQueue.Dequeue();
+
+            if (Settings.Hotbars[currentHotbar.Name].Value)
+            {
+                currentHotbar.ApplyTransparency(Settings.Transparency.Value);
+            }
+            else
+            {
+                currentHotbar.ResetTransparency();
+            }
+
+            updateQueue.Enqueue(currentHotbar);
+        }
     }
 
     public void Dispose()
@@ -25,13 +50,8 @@ internal class HotbarManager : IDisposable
             hotbar.ResetTransparency();
         }
 
-        Service.PlayerEventManager.PlayerLevelChanged -= OnLevelChange;
-        Service.ControllerEventManager.ControllerHotbarUpdate -= OnControllerHotbarChange;
+        Service.Framework.Update -= OnFrameworkUpdate;
     }
-
-    private void OnControllerHotbarChange(object? sender, EventArgs e) => ApplyTransparency();
-
-    private void OnLevelChange(object? sender, EventArgs e) => ApplyTransparency();
 
     public void Refresh() => ApplyTransparency();
 
