@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Authors></Authors>
 		<Company></Company>
-		<Version>1.0.0.9</Version>
+		<Version>1.0.1.0</Version>
 		<Description>KitchenSync</Description>
 		<Copyright></Copyright>
 		<PackageProjectUrl>https://github.com/midorikami/KitchenSync</PackageProjectUrl>
