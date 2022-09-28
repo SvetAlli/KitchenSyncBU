@@ -20,6 +20,11 @@ internal class HotbarManager : IDisposable
 
     public void Dispose()
     {
+        foreach (var hotbar in hotbarList)
+        {
+            hotbar.ResetTransparency();
+        }
+
         Service.PlayerEventManager.PlayerLevelChanged -= OnLevelChange;
         Service.ControllerEventManager.ControllerHotbarUpdate -= OnControllerHotbarChange;
     }
