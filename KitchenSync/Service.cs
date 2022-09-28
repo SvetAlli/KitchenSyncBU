@@ -28,6 +28,4 @@ internal class Service
     public static System.WindowManager WindowManager = null!;
     public static System.HotbarManager HotbarManager = null!;
     public static System.IconManager IconManager = null!;
-    public static System.PlayerEventManager PlayerEventManager = null!;
-    public static System.ControllerEventManager ControllerEventManager = null!;
 }
