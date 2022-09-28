@@ -29,23 +29,61 @@ internal unsafe class Hotbar
     {
         if (ActionBar == null || HotbarModule == null) return;
 
-        foreach (var index in Enumerable.Range(0, ActionBar->SlotCount))
+        if (Name == HotbarName.CrossHotbar && (IsHoldControlRtlt() || IsHoldControlLtrt()))
         {
-            var hotbarSlot = HotbarModule->Slot[Name == HotbarName.DoubleCrossR ? index + 8 : index];
-            var uiSlot = ActionBar->ActionBarSlots + index;
+            var startIndex = GetCrossHotBarIndex() % 2 == 0 ? 0 : 8;
+            PluginLog.Debug($"StartIndex: {startIndex}");
 
-            switch (hotbarSlot->CommandType)
+            foreach (var index in Enumerable.Range(startIndex, 8))
             {
-                case HotbarSlotType.Action when !IsRoleAction(hotbarSlot) && IsSyncAction(hotbarSlot):
-                case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
-                    ApplyTransparencyToSlot(uiSlot, percentage);
-                    break;
+                var hotbarSlot = GetHotBarSlot(index);
+                var uiSlot = ActionBar->ActionBarSlots + (startIndex == 0 ? index + 4 : index - 4);
 
-                default:
-                    ResetTransparencyToSlot(uiSlot);
-                    break;
+                PluginLog.Debug($"Skill: {GetAdjustedAction(hotbarSlot->CommandId)?.Name.RawString}");
+
+                switch (hotbarSlot->CommandType)
+                {
+                    case HotbarSlotType.Action when !IsRoleAction(hotbarSlot) && IsSyncAction(hotbarSlot):
+                    case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
+                        ApplyTransparencyToSlot(uiSlot, percentage);
+                        break;
+
+                    default:
+                        ResetTransparencyToSlot(uiSlot);
+                        break;
+                }
             }
         }
+        else
+        {
+            foreach (var index in Enumerable.Range(0, ActionBar->SlotCount))
+            {
+                var hotbarSlot = GetHotBarSlot(index);
+                var uiSlot = ActionBar->ActionBarSlots + index;
+
+                switch (hotbarSlot->CommandType)
+                {
+                    case HotbarSlotType.Action when !IsRoleAction(hotbarSlot) && IsSyncAction(hotbarSlot):
+                    case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
+                        ApplyTransparencyToSlot(uiSlot, percentage);
+                        break;
+
+                    default:
+                        ResetTransparencyToSlot(uiSlot);
+                        break;
+                }
+            }
+        }
+    }
+
+    private HotBarSlot* GetHotBarSlot(int index)
+    {
+        if (Name == HotbarName.DoubleCrossR)
+        {
+            return HotbarModule->Slot[index + 8];
+        }
+
+        return HotbarModule->Slot[index];
     }
 
     private int GetHotbarIndex()
@@ -62,6 +100,8 @@ internal unsafe class Hotbar
             HotbarName.Hotbar8 => ActionBar->RaptureHotbarId,
             HotbarName.Hotbar9 => ActionBar->RaptureHotbarId,
             HotbarName.Hotbar10 => ActionBar->RaptureHotbarId,
+            HotbarName.CrossHotbar when IsHoldControlLtrt() => GetCrossHotBarIndex() / 2 + 10,
+            HotbarName.CrossHotbar when IsHoldControlRtlt() => GetCrossHotBarIndex() / 2 + 10,
             HotbarName.CrossHotbar => ActionBar->RaptureHotbarId,
             HotbarName.DoubleCrossR => ((AddonActionDoubleCrossBase*)ActionBar)->BarTarget,
             HotbarName.DoubleCrossL => ((AddonActionDoubleCrossBase*)ActionBar)->BarTarget,
@@ -126,5 +166,29 @@ internal unsafe class Hotbar
         var adjustedActionID = ActionManager.Instance()->GetAdjustedActionId(actionID);
 
         return Service.DataManager.GetExcelSheet<Action>()!.GetRow(adjustedActionID);
+    }
+
+    private int GetCrossHotBarIndex()
+    {
+        var actionCrossBar = (AddonActionCross*) ActionBar;
+
+        if (actionCrossBar->ExpandedHoldControlsLTRT != 0) return actionCrossBar->ExpandedHoldControlsLTRT - 1;
+        if (actionCrossBar->ExpandedHoldControlsRTLT != 0) return actionCrossBar->ExpandedHoldControlsRTLT - 1;
+
+        return actionCrossBar->ActionBarBase.RaptureHotbarId;
+    }
+
+    private bool IsHoldControlRtlt()
+    {
+        var actionCrossBar = (AddonActionCross*) ActionBar;
+
+        return actionCrossBar->ExpandedHoldControlsRTLT != 0;
+    }
+
+    private bool IsHoldControlLtrt()
+    {
+        var actionCrossBar = (AddonActionCross*) ActionBar;
+
+        return actionCrossBar->ExpandedHoldControlsLTRT != 0;
     }
 }
