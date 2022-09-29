@@ -25,6 +25,8 @@ internal class HotbarManager : IDisposable
 
     private void OnFrameworkUpdate(Framework framework)
     {
+        if (!Service.ClientState.IsLoggedIn) return;
+
         // Controls how many hotbars are updated each frame
         foreach (var _ in Enumerable.Range(0, 4))
         {

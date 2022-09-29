@@ -31,27 +31,19 @@ internal unsafe class Hotbar
 
         if (Name == HotbarName.CrossHotbar && (IsHoldControlRtlt() || IsHoldControlLtrt()))
         {
+            // If our hotbar index is the left side of a crosshotbar, we start at 0
+            // If out index is the right side of a crosshotbar, we start at 8
             var startIndex = GetCrossHotBarIndex() % 2 == 0 ? 0 : 8;
-            PluginLog.Debug($"StartIndex: {startIndex}");
 
             foreach (var index in Enumerable.Range(startIndex, 8))
             {
                 var hotbarSlot = GetHotBarSlot(index);
+
+                // The ui slots that are replaced are the middle 8, starting at index 4 and ending at index 12
                 var uiSlot = ActionBar->ActionBarSlots + (startIndex == 0 ? index + 4 : index - 4);
 
-                PluginLog.Debug($"Skill: {GetAdjustedAction(hotbarSlot->CommandId)?.Name.RawString}");
-
-                switch (hotbarSlot->CommandType)
-                {
-                    case HotbarSlotType.Action when !IsRoleAction(hotbarSlot) && IsSyncAction(hotbarSlot):
-                    case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
-                        ApplyTransparencyToSlot(uiSlot, percentage);
-                        break;
-
-                    default:
-                        ResetTransparencyToSlot(uiSlot);
-                        break;
-                }
+                if (hotbarSlot == null || uiSlot == null) continue;
+                TryApplyTransparency(percentage, hotbarSlot, uiSlot);
             }
         }
         else
@@ -61,18 +53,24 @@ internal unsafe class Hotbar
                 var hotbarSlot = GetHotBarSlot(index);
                 var uiSlot = ActionBar->ActionBarSlots + index;
 
-                switch (hotbarSlot->CommandType)
-                {
-                    case HotbarSlotType.Action when !IsRoleAction(hotbarSlot) && IsSyncAction(hotbarSlot):
-                    case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
-                        ApplyTransparencyToSlot(uiSlot, percentage);
-                        break;
-
-                    default:
-                        ResetTransparencyToSlot(uiSlot);
-                        break;
-                }
+                if (hotbarSlot == null || uiSlot == null) continue;
+                TryApplyTransparency(percentage, hotbarSlot, uiSlot);
             }
+        }
+    }
+
+    private void TryApplyTransparency(float percentage, HotBarSlot* hotbarSlot, ActionBarSlot* uiSlot)
+    {
+        switch (hotbarSlot->CommandType)
+        {
+            case HotbarSlotType.Action when !IsRoleAction(hotbarSlot) && IsSyncAction(hotbarSlot):
+            case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
+                ApplyTransparencyToSlot(uiSlot, percentage);
+                break;
+
+            default:
+                ResetTransparencyToSlot(uiSlot);
+                break;
         }
     }
 
@@ -113,12 +111,11 @@ internal unsafe class Hotbar
     {
         if (ActionBar == null || HotbarModule == null) return;
 
-        var hotbarSize = ActionBar->SlotCount;
-
-        foreach (var index in Enumerable.Range(0, hotbarSize))
+        foreach (var index in Enumerable.Range(0, ActionBar->SlotCount))
         {
             var uiSlot = ActionBar->ActionBarSlots + index;
 
+            if (uiSlot == null) continue;
             ResetTransparencyToSlot(uiSlot);
         }
     }
@@ -130,12 +127,7 @@ internal unsafe class Hotbar
 
     private void ResetTransparencyToSlot(ActionBarSlot* uiSlot)
     {
-        if (uiSlot == null) return;
-        
-        var icon = uiSlot->Icon;
-        if (icon == null) return;
-        
-        icon->AtkResNode.Color.A = 0xFF;
+        uiSlot->Icon->AtkResNode.Color.A = 0xFF;
     }
 
     private bool IsRoleAction(HotBarSlot* dataSlot)
