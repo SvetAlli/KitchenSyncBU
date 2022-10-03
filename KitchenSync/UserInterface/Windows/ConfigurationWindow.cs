@@ -80,6 +80,8 @@ internal class ConfigurationWindow : Window, IDisposable
         extraOptions
             .AddTitle("Extra Options")
             .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
+            .AddConfigCheckbox("Apply to not yet unlocked", Settings.HotbarSettings.IncludeNotUnlocked, "Applies transparency to skills that you do not have unlocked")
+            .AddConfigCheckbox("Potato Mode", Settings.HotbarSettings.PotatoMode, "Updates hotbars less often, uses less resources\nMay cause latency in making icons transparent")
             .Draw();
 
         hotbarSelection

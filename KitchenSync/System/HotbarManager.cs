@@ -27,8 +27,7 @@ internal class HotbarManager : IDisposable
     {
         if (!Service.ClientState.IsLoggedIn) return;
 
-        // Controls how many hotbars are updated each frame
-        foreach (var _ in Enumerable.Range(0, 4))
+        if (Settings.PotatoMode.Value)
         {
             var currentHotbar = updateQueue.Dequeue();
 
@@ -42,6 +41,20 @@ internal class HotbarManager : IDisposable
             }
 
             updateQueue.Enqueue(currentHotbar);
+        }
+        else
+        {
+            foreach (var hotbar in hotbarList)
+            {
+                if (Settings.Hotbars[hotbar.Name].Value)
+                {
+                    hotbar.ApplyTransparency(Settings.Transparency.Value);
+                }
+                else
+                {
+                    hotbar.ResetTransparency();
+                }
+            }
         }
     }
 
