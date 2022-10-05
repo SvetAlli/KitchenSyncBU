@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Dalamud.Game;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
@@ -88,6 +87,10 @@ internal class HotbarManager : IDisposable
 
     private void LoadHotbars()
     {
+        // If the config doesn't have any hotbars
+        if (Settings.Hotbars.Count == 0) Service.Configuration = new Configuration();
+
+        // Load all hotbars
         foreach (var hotbar in Settings.Hotbars)
         {
             hotbarList.Add(new Hotbar(hotbar.Key));
