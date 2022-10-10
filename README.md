@@ -13,9 +13,9 @@ KitchenSync lets you set a transparency percentage to fade out those skills inst
 
 Default Game Behavior seen below:
 
-![image](https://user-images.githubusercontent.com/9083275/193208570-2c676237-bf7b-4fad-9682-e870bc0769f7.png)
+![image](https://user-images.githubusercontent.com/9083275/194432409-1842bae4-b4d1-4588-a1a6-28e79a65eb56.png)
 
 KitchenSync Modified Behavior seen below:
 
-![image](https://user-images.githubusercontent.com/9083275/193208810-5d62a059-c256-4b75-8fb0-91c68daa3ef8.png)
+![image](https://user-images.githubusercontent.com/9083275/194432417-51cae775-cf14-40fc-9a85-ba2026c49d08.png)
 
