@@ -70,7 +70,7 @@ internal unsafe class Hotbar
         }
     }
 
-    private bool ShouldApplyTransparency(HotBarSlot* slot) => (!IsRoleAction(slot) && IsSyncAction(slot)) || (Settings.IncludeNotUnlocked.Value && !IsSkillUnlocked(slot));
+    private bool ShouldApplyTransparency(HotBarSlot* slot) => (!IsRoleAction(slot) && IsSyncAction(slot)) || (Settings.IncludeNotUnlocked.Value && !IsActionUnlocked(slot));
 
     private void ApplyTransparencyToSlot(ActionBarSlot* uiSlot, float percentage) => uiSlot->Icon->AtkResNode.Color.A = (byte)(0xFF * percentage);
 
@@ -84,7 +84,7 @@ internal unsafe class Hotbar
 
     private Action? GetAdjustedAction(uint actionID) => Service.DataManager.GetExcelSheet<Action>()!.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
 
-    private bool IsSkillUnlocked(HotBarSlot* dataSlot)
+    private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
         var action = GetAdjustedAction(dataSlot->CommandId);
 
