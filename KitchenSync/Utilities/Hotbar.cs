@@ -86,6 +86,8 @@ internal unsafe class Hotbar
 
     private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
+        if (Service.DataManager.GetExcelSheet<TerritoryType>()!.GetRow(Service.ClientState.TerritoryType)!.TerritoryIntendedUse == 31) return true;
+        
         var action = GetAdjustedAction(dataSlot->CommandId);
 
         if ( action is null or { UnlockLink: 0 } ) return true;
