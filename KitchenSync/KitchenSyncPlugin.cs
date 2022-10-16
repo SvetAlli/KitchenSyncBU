@@ -1,6 +1,7 @@
 ﻿using Dalamud.Plugin;
 using KitchenSync.Data;
 using KitchenSync.System;
+using Lumina.Excel.GeneratedSheets;
 
 namespace KitchenSync;
 
@@ -15,6 +16,8 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         Service.Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Service.Configuration.Initialize(pluginInterface);
 
+        Service.ActionCache = new LuminaCache<Action>();
+        Service.TerritoryCache = new LuminaCache<TerritoryType>();
         Service.IconManager = new IconManager();
 
         Service.WindowManager = new WindowManager();
@@ -24,6 +27,8 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
 
     public void Dispose()
     {
+        Service.ActionCache.Dispose();
+        Service.TerritoryCache.Dispose();
         Service.IconManager.Dispose();
 
         Service.WindowManager.Dispose();
