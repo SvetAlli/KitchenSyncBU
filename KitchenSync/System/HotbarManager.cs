@@ -1,60 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dalamud.Game;
+using System.Linq;
+using Dalamud.Hooking;
+using Dalamud.Logging;
+using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
 
 namespace KitchenSync.System;
 
-internal class HotbarManager : IDisposable
+internal unsafe class HotbarManager : IDisposable
 {
+    private delegate void HotbarUpdateDelegate(AtkUnitBase* addon);
+
+    private delegate byte CrossHotbarUpdateDelegate(AtkUnitBase* addon, IntPtr a2, byte a3);
+
+    [Signature("E8 ?? ?? ?? ?? 80 BB ?? ?? ?? ?? ?? 74 4C 80 BB", DetourName = nameof(OnHotbarUpdate))]
+    private readonly Hook<HotbarUpdateDelegate>? hotbarUpdateHook = null;
+
+    [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 57 48 83 EC 20 48 8B 42 20", DetourName = nameof(OnCrossUpdate))]
+    private readonly Hook<CrossHotbarUpdateDelegate>? crossHotbarUpdateHook = null;
+
     private readonly List<Hotbar> hotbarList = new();
     private static HotbarSettings Settings => Service.Configuration.HotbarSettings;
-
-    private readonly Queue<Hotbar> updateQueue;
 
     public HotbarManager()
     {
         LoadHotbars();
 
-        updateQueue = new Queue<Hotbar>(hotbarList);
+        SignatureHelper.Initialise(this);
 
-        Service.Framework.Update += OnFrameworkUpdate;
-    }
-
-    private void OnFrameworkUpdate(Framework framework)
-    {
-        if (!Service.ClientState.IsLoggedIn) return;
-
-        if (Settings.PotatoMode.Value)
-        {
-            var currentHotbar = updateQueue.Dequeue();
-
-            if (Settings.Hotbars[currentHotbar.Name].Value)
-            {
-                currentHotbar.ApplyTransparency(Settings.Transparency.Value);
-            }
-            else
-            {
-                currentHotbar.ResetTransparency();
-            }
-
-            updateQueue.Enqueue(currentHotbar);
-        }
-        else
-        {
-            foreach (var hotbar in hotbarList)
-            {
-                if (Settings.Hotbars[hotbar.Name].Value)
-                {
-                    hotbar.ApplyTransparency(Settings.Transparency.Value);
-                }
-                else
-                {
-                    hotbar.ResetTransparency();
-                }
-            }
-        }
+        hotbarUpdateHook?.Enable();
+        crossHotbarUpdateHook?.Enable();
     }
 
     public void Dispose()
@@ -64,7 +42,48 @@ internal class HotbarManager : IDisposable
             hotbar.ResetTransparency();
         }
 
-        Service.Framework.Update -= OnFrameworkUpdate;
+        hotbarUpdateHook?.Dispose();
+        crossHotbarUpdateHook?.Dispose();
+    }
+
+    private void OnHotbarUpdate(AtkUnitBase* addon)
+    {
+        hotbarUpdateHook!.Original(addon);
+
+        try
+        {
+            var targetHotbar = hotbarList.FirstOrDefault(hotbar => hotbar.ActionBar == addon);
+
+            if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name].Value)
+            {
+                targetHotbar.ApplyTransparency(Settings.Transparency.Value);
+            }
+        }
+        catch (Exception e)
+        {
+            PluginLog.Error(e, $"Something went wrong updating hotbar {new IntPtr(addon):X8}");
+        }
+    }
+
+    private byte OnCrossUpdate(AtkUnitBase* addon, IntPtr a2, byte a3)
+    {
+        var result = crossHotbarUpdateHook!.Original(addon, a2, a3);
+
+        try
+        {
+            var targetHotbar = hotbarList.FirstOrDefault(hotbar => hotbar.ActionBar == addon);
+
+            if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name].Value)
+            {
+                targetHotbar.ApplyTransparency(Settings.Transparency.Value);
+            }
+        }
+        catch (Exception e)
+        {
+            PluginLog.Error(e, $"Something went wrong updating hotbar {new IntPtr(addon):X8}");
+        }
+
+        return result;
     }
 
     public void Refresh() => ApplyTransparency();
