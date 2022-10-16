@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -16,7 +17,7 @@ internal unsafe class Hotbar
 
     public HotbarName Name { get; }
 
-    private AddonActionBarBase* ActionBar => (AddonActionBarBase*) Service.GameGui.GetAddonByName(Name.GetAddonName(), 1);
+    public AddonActionBarBase* ActionBar => (AddonActionBarBase*) Service.GameGui.GetAddonByName(Name.GetAddonName(), 1);
     private HotbarPointer* HotbarModule => Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[GetHotbarIndex()];
 
     public Hotbar(HotbarName name)
@@ -82,11 +83,21 @@ internal unsafe class Hotbar
     
     private bool IsRoleAction(HotBarSlot* dataSlot) => GetAdjustedAction(dataSlot->CommandId) is {IsRoleAction: true};
 
-    private Action? GetAdjustedAction(uint actionID) => Service.DataManager.GetExcelSheet<Action>()!.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
+    private Action GetAdjustedAction(uint actionID) => Service.ActionCache.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
+
+    private bool IsExpandedHoldCommand() => IsHoldControlLtrt() || IsHoldControlRtlt();
+
+    private bool IsCycleUpCommand() => GetCrossHotBarIndex() is 0x11 or 0x12;
+
+    private bool IsCycleDownCommand() => GetCrossHotBarIndex() is 0x13 or 0x14;
+
+    private bool IsLeftHoldReference() => GetCrossHotBarIndex() % 2 == 1;
+
+    private bool IsRightHoldReference() => GetCrossHotBarIndex() % 2 == 0;
 
     private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
-        if (Service.DataManager.GetExcelSheet<TerritoryType>()!.GetRow(Service.ClientState.TerritoryType)!.TerritoryIntendedUse == 31) return true;
+        if (Service.TerritoryCache.GetRow(Service.ClientState.TerritoryType).TerritoryIntendedUse == 31) return true;
         
         var action = GetAdjustedAction(dataSlot->CommandId);
 
@@ -115,8 +126,8 @@ internal unsafe class Hotbar
     {
         var actionCrossBar = (AddonActionCross*) ActionBar;
 
-        if (actionCrossBar->ExpandedHoldControlsLTRT != 0) return actionCrossBar->ExpandedHoldControlsLTRT - 1;
-        if (actionCrossBar->ExpandedHoldControlsRTLT != 0) return actionCrossBar->ExpandedHoldControlsRTLT - 1;
+        if (actionCrossBar->ExpandedHoldControlsLTRT != 0) return actionCrossBar->ExpandedHoldControlsLTRT;
+        if (actionCrossBar->ExpandedHoldControlsRTLT != 0) return actionCrossBar->ExpandedHoldControlsRTLT;
 
         return actionCrossBar->ActionBarBase.RaptureHotbarId;
     }
@@ -134,23 +145,31 @@ internal unsafe class Hotbar
     {
         return Name switch
         {
-            // If we are looking at LT -> RT, then we are 0 indexed, we need to refer to 4 - 12
-            HotbarName.CrossHotbar when IsHoldControlLtrt() => ActionBar->ActionBarSlots + index + 4,
+            // ExpandedHoldControls use ui slots 4 - 12 for display
 
-            // If we are looking at RT -> LR, then we are 8 indexed, we need to refer to 4 - 12
-            HotbarName.CrossHotbar when IsHoldControlRtlt() => ActionBar->ActionBarSlots + index - 4,
+            // If the bar we are referring to is on the left side we need to increase our start index by 4
+            HotbarName.CrossHotbar when IsExpandedHoldCommand() && IsLeftHoldReference() => ActionBar->ActionBarSlots + index + 4,
 
-            // All other Hotbars
+            // If the bar we are referring to is on the right side we need to decrease our start index by 4
+            HotbarName.CrossHotbar when IsExpandedHoldCommand() && IsRightHoldReference() => ActionBar->ActionBarSlots + index - 4,
+
+            // All other hotbars
             _ => ActionBar->ActionBarSlots + index
         };
     }
 
     private int GetHotbarIndex()
     {
+        PluginLog.Debug($"CurrentBar: {ActionBar->RaptureHotbarId}");
+
         return Name switch
         {
-            HotbarName.CrossHotbar when IsHoldControlLtrt() => GetCrossHotBarIndex() / 2 + 10,
-            HotbarName.CrossHotbar when IsHoldControlRtlt() => GetCrossHotBarIndex() / 2 + 10,
+            HotbarName.CrossHotbar when IsExpandedHoldCommand() && IsCycleUpCommand() => ActionBar->RaptureHotbarId == 17 ? 10 : ActionBar->RaptureHotbarId + 1,
+            HotbarName.CrossHotbar when IsExpandedHoldCommand() && IsCycleDownCommand() => ActionBar->RaptureHotbarId == 10 ? 17 : ActionBar->RaptureHotbarId - 1,
+
+            HotbarName.CrossHotbar when IsHoldControlLtrt() => ( GetCrossHotBarIndex() - 1 ) / 2 + 10,
+            HotbarName.CrossHotbar when IsHoldControlRtlt() => ( GetCrossHotBarIndex() - 1 ) / 2 + 10,
+
             HotbarName.DoubleCrossR => ((AddonActionDoubleCrossBase*)ActionBar)->BarTarget,
             HotbarName.DoubleCrossL => ((AddonActionDoubleCrossBase*)ActionBar)->BarTarget,
             _ => ActionBar->RaptureHotbarId
@@ -171,7 +190,7 @@ internal unsafe class Hotbar
     {
         return Name switch
         {
-            HotbarName.CrossHotbar when IsHoldControlRtlt() => 8,
+            HotbarName.CrossHotbar when IsExpandedHoldCommand() && IsRightHoldReference() => 8,
             _ => 0
         };
     }
