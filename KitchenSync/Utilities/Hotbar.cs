@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -160,8 +159,6 @@ internal unsafe class Hotbar
 
     private int GetHotbarIndex()
     {
-        PluginLog.Debug($"CurrentBar: {ActionBar->RaptureHotbarId}");
-
         return Name switch
         {
             HotbarName.CrossHotbar when IsExpandedHoldCommand() && IsCycleUpCommand() => ActionBar->RaptureHotbarId == 17 ? 10 : ActionBar->RaptureHotbarId + 1,
