@@ -94,6 +94,8 @@ internal unsafe class Hotbar
 
     private bool IsRightHoldReference() => GetCrossHotBarIndex() % 2 == 0;
 
+    private bool IsLeftExpandedReference() => ((AddonActionDoubleCrossBase*) ActionBar)->UseLeftSide != 0;
+
     private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
         if (Service.TerritoryCache.GetRow(Service.ClientState.TerritoryType).TerritoryIntendedUse == 31) return true;
@@ -135,7 +137,8 @@ internal unsafe class Hotbar
     {
         return Name switch
         {
-            HotbarName.DoubleCrossR => HotbarModule->Slot[index + 8],
+            HotbarName.DoubleCrossR when !IsLeftExpandedReference() => HotbarModule->Slot[index + 8],
+            HotbarName.DoubleCrossL when !IsLeftExpandedReference() => HotbarModule->Slot[index + 8],
             _ => HotbarModule->Slot[index]
         };
     }
