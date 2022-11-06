@@ -7,6 +7,7 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
+using GameMain = FFXIVClientStructs.FFXIV.Client.Game.GameMain;
 
 namespace KitchenSync.System;
 
@@ -52,12 +53,7 @@ internal unsafe class HotbarManager : IDisposable
 
         try
         {
-            var targetHotbar = hotbarList.FirstOrDefault(hotbar => hotbar.ActionBar == addon);
-
-            if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name].Value)
-            {
-                targetHotbar.ApplyTransparency(Settings.Transparency.Value);
-            }
+            UpdateHotbar(addon);
         }
         catch (Exception e)
         {
@@ -71,12 +67,7 @@ internal unsafe class HotbarManager : IDisposable
 
         try
         {
-            var targetHotbar = hotbarList.FirstOrDefault(hotbar => hotbar.ActionBar == addon);
-
-            if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name].Value)
-            {
-                targetHotbar.ApplyTransparency(Settings.Transparency.Value);
-            }
+            UpdateHotbar(addon);
         }
         catch (Exception e)
         {
@@ -84,6 +75,23 @@ internal unsafe class HotbarManager : IDisposable
         }
 
         return result;
+    }
+
+    private void UpdateHotbar(AtkUnitBase* hotbarAddon)
+    {
+        var targetHotbar = hotbarList.FirstOrDefault(hotbar => hotbar.ActionBar == hotbarAddon);
+
+        if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name].Value)
+        {
+            if (Settings.DisableInSanctuaries.Value && GameMain.IsInSanctuary())
+            {
+                targetHotbar.ResetTransparency();
+            }
+            else
+            {
+                targetHotbar.ApplyTransparency(Settings.Transparency.Value);
+            }
+        }
     }
 
     public void Refresh() => ApplyTransparency();

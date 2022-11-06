@@ -79,6 +79,7 @@ internal class ConfigurationWindow : Window, IDisposable
 
         extraOptions
             .AddTitle("Extra Options")
+            .AddConfigCheckbox("Disable in Sanctuaries", Settings.HotbarSettings.DisableInSanctuaries)
             .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
             .AddConfigCheckbox("Apply to not yet unlocked", Settings.HotbarSettings.IncludeNotUnlocked, "Applies transparency to skills that you do not have unlocked")
             .Draw();

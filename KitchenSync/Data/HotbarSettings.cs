@@ -8,8 +8,8 @@ public class HotbarSettings
     public Setting<float> Transparency = new(0.20f);
     public Setting<bool> IncludeMacros = new(true);
     public Setting<bool> IncludeNotUnlocked = new(true);
-    public Setting<bool> PotatoMode = new(false);
-
+    public Setting<bool> DisableInSanctuaries = new(true);
+    
     public Dictionary<HotbarName, Setting<bool>> Hotbars = new()
     {
         {HotbarName.Hotbar1, new Setting<bool>(true)},
