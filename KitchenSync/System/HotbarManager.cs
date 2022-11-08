@@ -50,6 +50,7 @@ internal unsafe class HotbarManager : IDisposable
     private void OnHotbarUpdate(AtkUnitBase* addon)
     {
         hotbarUpdateHook!.Original(addon);
+        if (Service.ClientState.IsPvP) return;
 
         try
         {
@@ -64,6 +65,7 @@ internal unsafe class HotbarManager : IDisposable
     private byte OnCrossUpdate(AtkUnitBase* addon, IntPtr a2, byte a3)
     {
         var result = crossHotbarUpdateHook!.Original(addon, a2, a3);
+        if (Service.ClientState.IsPvP) return result;
 
         try
         {
