@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Interface;
+using Dalamud.Interface.Animation;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
@@ -26,11 +28,11 @@ internal class ConfigurationWindow : Window, IDisposable
     {
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(350, 350),
-            MaximumSize = new Vector2(9999,9999)
+            MinimumSize = new Vector2(700, 400),
+            MaximumSize = new Vector2(700,400)
         };
 
-        Flags |= ImGuiWindowFlags.AlwaysVerticalScrollbar;
+        Flags |= ImGuiWindowFlags.NoResize;
     }
 
     public void Dispose()
@@ -44,6 +46,74 @@ internal class ConfigurationWindow : Window, IDisposable
     }
 
     public override void Draw()
+    {
+        var windowSize = ImGui.GetContentRegionAvail();
+
+        if (ImGui.BeginChild("LeftSide", windowSize with {X = windowSize.X / 2.0f - 7.0f * ImGuiHelpers.GlobalScale}))
+        {
+            ImGuiHelpers.ScaledDummy(40.0f);
+            
+            DrawPreviews();
+        }
+        ImGui.EndChild();
+        ImGui.SameLine();
+        DrawVerticalLine();
+        ImGuiHelpers.ScaledDummy(0.0f);
+        ImGui.SameLine();
+        
+        if (ImGui.BeginChild("RightSide", windowSize with {X = windowSize.X / 2.0f}))
+        {
+            if(ImGui.BeginTabBar("OptionsTabBar"))
+            {
+                if (ImGui.BeginTabItem("Options"))
+                {
+                    DrawBaseOptions();
+                    
+                    ImGui.EndTabItem();
+                }
+                
+                if (ImGui.BeginTabItem("Regular Hotbars"))
+                {
+                    hotbarSelection
+                        .AddTitle("Hotbar Selection")
+                        .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars.Where(hotbar => hotbar.Key is not (HotbarName.CrossHotbar or HotbarName.DoubleCrossL or HotbarName.DoubleCrossR)))
+                        .Draw();
+                    
+                    ImGui.EndTabItem();
+                }
+                
+                if (ImGui.BeginTabItem("Cross Hotbars"))
+                {
+                    hotbarSelection
+                        .AddTitle("CrossHotbar Selection")
+                        .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars.Where(hotbar => hotbar.Key is HotbarName.CrossHotbar or HotbarName.DoubleCrossL or HotbarName.DoubleCrossR))
+                        .Draw();
+                    
+                    ImGui.EndTabItem();
+                }
+                
+                ImGui.EndTabBar();
+            }
+        }
+        ImGui.EndChild();
+    }
+
+    private void DrawBaseOptions()
+    {
+        transparency
+            .AddTitle("Transparency")
+            .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
+            .Draw();
+
+        extraOptions
+            .AddTitle("Extra Options")
+            .AddConfigCheckbox("Disable in Sanctuaries", Settings.HotbarSettings.DisableInSanctuaries)
+            .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
+            .AddConfigCheckbox("Apply to not yet unlocked", Settings.HotbarSettings.IncludeNotUnlocked, "Applies transparency to skills that you do not have unlocked")
+            .Draw();
+    }
+
+    private void DrawPreviews()
     {
         baseline
             .AddTitle("Default Available")
@@ -65,28 +135,11 @@ internal class ConfigurationWindow : Window, IDisposable
 
         previewMode
             .AddTitle("Modified Level Sync")
-            .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
-            .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
-            .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
-            .AddIcon(3454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value }).SameLine()
-            .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) { W = Settings.HotbarSettings.Transparency.Value })
-            .Draw();
-
-        transparency
-            .AddTitle("Transparency")
-            .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
-            .Draw();
-
-        extraOptions
-            .AddTitle("Extra Options")
-            .AddConfigCheckbox("Disable in Sanctuaries", Settings.HotbarSettings.DisableInSanctuaries)
-            .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
-            .AddConfigCheckbox("Apply to not yet unlocked", Settings.HotbarSettings.IncludeNotUnlocked, "Applies transparency to skills that you do not have unlocked")
-            .Draw();
-
-        hotbarSelection
-            .AddTitle("Hotbar Selection")
-            .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars)
+            .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
+            .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
+            .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
+            .AddIcon(3454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
+            .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value})
             .Draw();
     }
 
@@ -95,11 +148,21 @@ internal class ConfigurationWindow : Window, IDisposable
         Service.PluginInterface.UiBuilder.AddNotification("Settings Saved", "KitchenSync", NotificationType.Success);
         Service.Configuration.Save();
     }
+    
+    private void DrawVerticalLine()
+    {
+        var contentArea = ImGui.GetContentRegionAvail();
+        var cursor = ImGui.GetCursorScreenPos();
+        var drawList = ImGui.GetWindowDrawList();
+        var color = ImGui.GetColorU32(Colors.White);
+
+        drawList.AddLine(cursor, cursor with {Y = cursor.Y + contentArea.Y}, color, 1.0f);
+    }
 }
 
 internal static class InfoBoxExtensions
 {
-    internal static InfoBox AddHotbarConfiguration(this InfoBox infoBox, Dictionary<HotbarName, Setting<bool>> configurations)
+    internal static InfoBox AddHotbarConfiguration(this InfoBox infoBox, IEnumerable<KeyValuePair<HotbarName, Setting<bool>>> configurations)
     {
         var list = infoBox.BeginList();
 
