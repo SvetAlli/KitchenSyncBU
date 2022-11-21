@@ -8,7 +8,6 @@ using Dalamud.Plugin;
 using KitchenSync.Data;
 using Lumina.Excel.GeneratedSheets;
 using CommandManager = Dalamud.Game.Command.CommandManager;
-using Condition = Dalamud.Game.ClientState.Conditions.Condition;
 
 namespace KitchenSync;
 
@@ -22,7 +21,6 @@ internal class Service
     [PluginService] public static GameGui GameGui { get; private set; } = null!;
     [PluginService] public static ObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static DataManager DataManager { get; private set; } = null!;
-    [PluginService] public static Condition Condition { get; private set; } = null!;
 
     public static Configuration Configuration = null!;
     public static System.CommandManager CommandSystem = null!;
