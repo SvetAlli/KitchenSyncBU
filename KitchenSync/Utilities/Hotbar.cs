@@ -112,7 +112,7 @@ internal unsafe class Hotbar
         var action = GetAdjustedAction(dataSlot->IconA);
         var level = Service.ClientState.LocalPlayer?.Level ?? 0;
 
-        return action?.ClassJobLevel > level;
+        return action.ClassJobLevel > level;
     }
 
     private bool IsSyncAction(HotBarSlot* dataSlot)

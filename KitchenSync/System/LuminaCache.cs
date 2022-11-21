@@ -20,14 +20,13 @@ internal class LuminaCache<T> : IDisposable where T : ExcelRow
 
     public T GetRow(uint id)
     {
-        if (cache.ContainsKey(id))
+        if (cache.TryGetValue(id, out var value))
         {
-            return cache[id];
+            return value;
         }
         else
         {
-            cache.Add(id, Service.DataManager.GetExcelSheet<T>()!.GetRow(id)!);
-            return cache[id];
+            return cache[id] = Service.DataManager.GetExcelSheet<T>()!.GetRow(id)!;
         }
     }
 }
