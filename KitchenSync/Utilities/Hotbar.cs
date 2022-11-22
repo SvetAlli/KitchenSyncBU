@@ -98,7 +98,7 @@ internal unsafe class Hotbar
 
     private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
-        if (Service.TerritoryCache.GetRow(Service.ClientState.TerritoryType).TerritoryIntendedUse == 31) return true;
+        if (Service.TerritoryCache.GetRow(Service.ClientState.TerritoryType)?.TerritoryIntendedUse == 31) return true;
         
         var action = GetAdjustedAction(dataSlot->CommandId);
 

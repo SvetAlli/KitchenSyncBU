@@ -18,7 +18,7 @@ internal class LuminaCache<T> : IDisposable where T : ExcelRow
         
     }
 
-    public T GetRow(uint id)
+    public T? GetRow(uint id)
     {
         if (cache.TryGetValue(id, out var value))
         {
