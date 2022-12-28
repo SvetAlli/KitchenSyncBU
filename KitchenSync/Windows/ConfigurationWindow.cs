@@ -119,7 +119,7 @@ internal class ConfigurationWindow : Window
 
         var stringSize = ImGui.CalcTextSize(versionString);
 
-        var x = ImGui.GetWindowWidth() / 2 - (stringSize.X / 2) * ImGuiHelpers.GlobalScale;
+        var x = ImGui.GetContentRegionAvail().X / 2.0f - stringSize.X / 2;
         var y = ImGui.GetWindowHeight() - 25 * ImGuiHelpers.GlobalScale;
             
         ImGui.SetCursorPos(new Vector2(x, y));
