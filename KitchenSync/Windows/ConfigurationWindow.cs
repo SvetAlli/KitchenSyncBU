@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 using Dalamud.Interface;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
@@ -12,29 +11,31 @@ using KamiLib.InfoBoxSystem;
 using KamiLib.Utilities;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
+using KitchenSync.Windows.Tabs;
 
 namespace KitchenSync.Windows;
 
-internal class ConfigurationWindow : Window, IDisposable
+internal class ConfigurationWindow : Window
 {
     private static Configuration Settings => Service.Configuration;
 
+    private readonly TabBar tabBar = new("KitchenSyncTabBar", Vector2.Zero);
+    
     public ConfigurationWindow() : base("KitchenSync Configuration")
     {
         KamiLib.KamiLib.CommandManager.AddCommand(new ConfigurationWindowCommands<ConfigurationWindow>());
         
+        tabBar.AddTab(new BaseOptionsTabItem());
+        tabBar.AddTab(new RegularHotbarsTabItem());
+        tabBar.AddTab(new CrossHotbarSelectionTabItem());
+        
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(700, 400),
-            MaximumSize = new Vector2(700,400)
+            MinimumSize = new Vector2(575,350),
+            MaximumSize = new Vector2(575,350)
         };
 
         Flags |= ImGuiWindowFlags.NoResize;
-    }
-
-    public void Dispose()
-    {
-
     }
 
     public override void PreOpenCheck()
@@ -48,9 +49,9 @@ internal class ConfigurationWindow : Window, IDisposable
 
         if (ImGui.BeginChild("LeftSide", windowSize with {X = windowSize.X / 2.0f - 7.0f * ImGuiHelpers.GlobalScale}))
         {
-            ImGuiHelpers.ScaledDummy(40.0f);
-            
+            ImGuiHelpers.ScaledDummy(30.0f);
             DrawPreviews();
+            DrawVersionNumber();
         }
         ImGui.EndChild();
         ImGui.SameLine();
@@ -60,60 +61,15 @@ internal class ConfigurationWindow : Window, IDisposable
         
         if (ImGui.BeginChild("RightSide", windowSize with {X = windowSize.X / 2.0f}))
         {
-            if(ImGui.BeginTabBar("OptionsTabBar"))
-            {
-                if (ImGui.BeginTabItem("Options"))
-                {
-                    DrawBaseOptions();
-                    
-                    ImGui.EndTabItem();
-                }
-                
-                if (ImGui.BeginTabItem("Regular Hotbars"))
-                {
-                    InfoBox.Instance
-                        .AddTitle("Hotbar Selection")
-                        .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars.Where(hotbar => hotbar.Key is not (HotbarName.CrossHotbar or HotbarName.DoubleCrossL or HotbarName.DoubleCrossR)))
-                        .Draw();
-                    
-                    ImGui.EndTabItem();
-                }
-                
-                if (ImGui.BeginTabItem("Cross Hotbars"))
-                {
-                    InfoBox.Instance
-                        .AddTitle("CrossHotbar Selection")
-                        .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars.Where(hotbar => hotbar.Key is HotbarName.CrossHotbar or HotbarName.DoubleCrossL or HotbarName.DoubleCrossR))
-                        .Draw();
-                    
-                    ImGui.EndTabItem();
-                }
-                
-                ImGui.EndTabBar();
-            }
+            tabBar.Draw();
         }
         ImGui.EndChild();
     }
-
-    private void DrawBaseOptions()
-    {
-        InfoBox.Instance
-            .AddTitle("Transparency")
-            .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, InfoBox.Instance.InnerWidth)
-            .Draw();
-
-        InfoBox.Instance
-            .AddTitle("Extra Options")
-            .AddConfigCheckbox("Disable in Sanctuaries", Settings.HotbarSettings.DisableInSanctuaries)
-            .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
-            .AddConfigCheckbox("Apply to not yet unlocked", Settings.HotbarSettings.IncludeNotUnlocked, "Applies transparency to skills that you do not have unlocked")
-            .Draw();
-    }
-
+    
     private void DrawPreviews()
     {
         InfoBox.Instance
-            .AddTitle("Default Available")
+            .AddTitle("Default Available", 1.0f)
             .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
             .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
             .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
@@ -122,7 +78,7 @@ internal class ConfigurationWindow : Window, IDisposable
             .Draw();
 
         InfoBox.Instance
-            .AddTitle("Default Level Sync")
+            .AddTitle("Default Level Sync", 1.0f)
             .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
             .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
             .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
@@ -131,7 +87,7 @@ internal class ConfigurationWindow : Window, IDisposable
             .Draw();
 
         InfoBox.Instance
-            .AddTitle("Modified Level Sync")
+            .AddTitle("Modified Level Sync", 1.0f)
             .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
             .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
             .AddIcon(3662, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
@@ -154,6 +110,21 @@ internal class ConfigurationWindow : Window, IDisposable
         var color = ImGui.GetColorU32(Colors.White);
 
         drawList.AddLine(cursor, cursor with {Y = cursor.Y + contentArea.Y}, color, 1.0f);
+    }
+    
+    private void DrawVersionNumber()
+    {
+        var assemblyInformation = Assembly.GetExecutingAssembly().FullName!.Split(',');
+        var versionString = assemblyInformation[1].Replace('=', ' ');
+
+        var stringSize = ImGui.CalcTextSize(versionString);
+
+        var x = ImGui.GetWindowWidth() / 2 - (stringSize.X / 2) * ImGuiHelpers.GlobalScale;
+        var y = ImGui.GetWindowHeight() - 25 * ImGuiHelpers.GlobalScale;
+            
+        ImGui.SetCursorPos(new Vector2(x, y));
+
+        ImGui.TextColored(Colors.Grey, versionString);
     }
 }
 
