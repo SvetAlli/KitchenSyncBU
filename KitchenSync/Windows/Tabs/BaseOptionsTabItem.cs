@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-using Dalamud.Interface;
-using KamiLib.InfoBoxSystem;
+﻿using KamiLib.InfoBoxSystem;
 using KamiLib.Interfaces;
 using KitchenSync.Data;
 
@@ -17,11 +15,6 @@ public class BaseOptionsTabItem : ITabItem
         InfoBox.Instance
             .AddTitle("Transparency", out var innerWidth, 0.90f)
             .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, innerWidth)
-            .AddButton("Reset", () =>
-            {
-                Settings.HotbarSettings.Transparency.Value = 0.20f;
-                Service.Configuration.Save();
-            }, new Vector2(innerWidth, 23.0f * ImGuiHelpers.GlobalScale))
             .Draw();
 
         InfoBox.Instance
