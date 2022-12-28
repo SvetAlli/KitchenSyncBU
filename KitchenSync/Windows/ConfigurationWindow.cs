@@ -6,13 +6,14 @@ using Dalamud.Interface;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
+using KamiLib.CommandSystem;
 using KamiLib.Configuration;
 using KamiLib.InfoBoxSystem;
 using KamiLib.Utilities;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
 
-namespace KitchenSync.UserInterface.Windows;
+namespace KitchenSync.Windows;
 
 internal class ConfigurationWindow : Window, IDisposable
 {
@@ -20,6 +21,8 @@ internal class ConfigurationWindow : Window, IDisposable
 
     public ConfigurationWindow() : base("KitchenSync Configuration")
     {
+        KamiLib.KamiLib.CommandManager.AddCommand(new ConfigurationWindowCommands<ConfigurationWindow>());
+        
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(700, 400),
