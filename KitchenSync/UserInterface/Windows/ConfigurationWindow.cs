@@ -3,25 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Interface;
-using Dalamud.Interface.Animation;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
+using KamiLib.Configuration;
+using KamiLib.InfoBoxSystem;
+using KamiLib.Utilities;
 using KitchenSync.Data;
-using KitchenSync.UserInterface.Components;
 using KitchenSync.Utilities;
 
 namespace KitchenSync.UserInterface.Windows;
 
 internal class ConfigurationWindow : Window, IDisposable
 {
-    private readonly InfoBox transparency = new();
-    private readonly InfoBox hotbarSelection = new();
-    private readonly InfoBox previewMode = new();
-    private readonly InfoBox baseline = new();
-    private readonly InfoBox vanilla = new();
-    private readonly InfoBox extraOptions = new();
-
     private static Configuration Settings => Service.Configuration;
 
     public ConfigurationWindow() : base("KitchenSync Configuration")
@@ -74,7 +68,7 @@ internal class ConfigurationWindow : Window, IDisposable
                 
                 if (ImGui.BeginTabItem("Regular Hotbars"))
                 {
-                    hotbarSelection
+                    InfoBox.Instance
                         .AddTitle("Hotbar Selection")
                         .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars.Where(hotbar => hotbar.Key is not (HotbarName.CrossHotbar or HotbarName.DoubleCrossL or HotbarName.DoubleCrossR)))
                         .Draw();
@@ -84,7 +78,7 @@ internal class ConfigurationWindow : Window, IDisposable
                 
                 if (ImGui.BeginTabItem("Cross Hotbars"))
                 {
-                    hotbarSelection
+                    InfoBox.Instance
                         .AddTitle("CrossHotbar Selection")
                         .AddHotbarConfiguration(Settings.HotbarSettings.Hotbars.Where(hotbar => hotbar.Key is HotbarName.CrossHotbar or HotbarName.DoubleCrossL or HotbarName.DoubleCrossR))
                         .Draw();
@@ -100,12 +94,12 @@ internal class ConfigurationWindow : Window, IDisposable
 
     private void DrawBaseOptions()
     {
-        transparency
+        InfoBox.Instance
             .AddTitle("Transparency")
-            .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, transparency.InnerWidth)
+            .AddDragFloat("", Settings.HotbarSettings.Transparency, 0.10f, 1.0f, InfoBox.Instance.InnerWidth)
             .Draw();
 
-        extraOptions
+        InfoBox.Instance
             .AddTitle("Extra Options")
             .AddConfigCheckbox("Disable in Sanctuaries", Settings.HotbarSettings.DisableInSanctuaries)
             .AddConfigCheckbox("Apply to Macros", Settings.HotbarSettings.IncludeMacros)
@@ -115,7 +109,7 @@ internal class ConfigurationWindow : Window, IDisposable
 
     private void DrawPreviews()
     {
-        baseline
+        InfoBox.Instance
             .AddTitle("Default Available")
             .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
             .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), 1.0f).SameLine()
@@ -124,7 +118,7 @@ internal class ConfigurationWindow : Window, IDisposable
             .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), 1.0f)
             .Draw();
 
-        vanilla
+        InfoBox.Instance
             .AddTitle("Default Level Sync")
             .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
             .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f}).SameLine()
@@ -133,7 +127,7 @@ internal class ConfigurationWindow : Window, IDisposable
             .AddIcon(216, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = 1.0f})
             .Draw();
 
-        previewMode
+        InfoBox.Instance
             .AddTitle("Modified Level Sync")
             .AddIcon(454, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()
             .AddIcon(3064, ImGuiHelpers.ScaledVector2(40.0f), new Vector4(0.50f) {W = Settings.HotbarSettings.Transparency.Value}).SameLine()

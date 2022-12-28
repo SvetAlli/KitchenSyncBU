@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KamiLib.Configuration;
 using KitchenSync.Utilities;
 
 namespace KitchenSync.Data;
