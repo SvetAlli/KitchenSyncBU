@@ -8,6 +8,7 @@ namespace KitchenSync;
 public sealed class KitchenSyncPlugin : IDalamudPlugin
 {
     public string Name => "KitchenSync";
+    private const string ShorthandCommand = "/ksync";
 
     public KitchenSyncPlugin(DalamudPluginInterface pluginInterface)
     {
@@ -19,7 +20,8 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         Service.Configuration.Initialize(pluginInterface);
 
         KamiLib.KamiLib.WindowManager.AddWindow(new ConfigurationWindow());
-        
+        KamiLib.KamiLib.CommandManager.AddHandler(ShorthandCommand, "shorthand command to open configuration window");
+
         Service.HotbarManager = new HotbarManager();
     }
 
