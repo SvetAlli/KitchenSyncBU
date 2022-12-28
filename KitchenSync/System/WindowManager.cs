@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Interface.Windowing;
+using KamiLib.Utilities;
 using KitchenSync.UserInterface.Windows;
-using KitchenSync.Utilities;
 
 namespace KitchenSync.System;
 
