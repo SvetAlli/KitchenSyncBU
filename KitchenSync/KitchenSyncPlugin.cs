@@ -1,4 +1,5 @@
 ﻿using Dalamud.Plugin;
+using KitchenSync.Commands;
 using KitchenSync.Data;
 using KitchenSync.System;
 using KitchenSync.Windows;
@@ -21,6 +22,8 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
 
         KamiLib.KamiLib.WindowManager.AddWindow(new ConfigurationWindow());
         KamiLib.KamiLib.CommandManager.AddHandler(ShorthandCommand, "shorthand command to open configuration window");
+        KamiLib.KamiLib.CommandManager.AddCommand(new MainHotbarCommands());
+        KamiLib.KamiLib.CommandManager.AddCommand(new CrossHotbarCommands());
 
         Service.HotbarManager = new HotbarManager();
     }
