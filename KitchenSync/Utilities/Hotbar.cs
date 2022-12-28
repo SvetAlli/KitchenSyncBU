@@ -4,6 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using KamiLib.Caching;
 using KitchenSync.Data;
 using Lumina.Excel.GeneratedSheets;
 using HotbarPointer = FFXIVClientStructs.FFXIV.Client.UI.Misc.HotBar;
@@ -12,7 +13,7 @@ namespace KitchenSync.Utilities;
 
 internal unsafe class Hotbar
 {
-    private HotbarSettings Settings => Service.Configuration.HotbarSettings;
+    private static HotbarSettings Settings => Service.Configuration.HotbarSettings;
 
     public HotbarName Name { get; }
 
@@ -82,7 +83,7 @@ internal unsafe class Hotbar
     
     private bool IsRoleAction(HotBarSlot* dataSlot) => GetAdjustedAction(dataSlot->CommandId) is {IsRoleAction: true};
 
-    private Action GetAdjustedAction(uint actionID) => Service.ActionCache.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
+    private Action? GetAdjustedAction(uint actionID) => ActionCache.Instance.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
 
     private bool IsExpandedHoldCommand() => IsHoldControlLtrt() || IsHoldControlRtlt();
 
@@ -98,7 +99,7 @@ internal unsafe class Hotbar
 
     private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
-        if (Service.TerritoryCache.GetRow(Service.ClientState.TerritoryType)?.TerritoryIntendedUse == 31) return true;
+        if (TerritoryTypeCache.Instance.GetRow(Service.ClientState.TerritoryType)?.TerritoryIntendedUse == 31) return true;
         
         var action = GetAdjustedAction(dataSlot->CommandId);
 
@@ -112,7 +113,7 @@ internal unsafe class Hotbar
         var action = GetAdjustedAction(dataSlot->IconA);
         var level = Service.ClientState.LocalPlayer?.Level ?? 0;
 
-        return action.ClassJobLevel > level;
+        return action?.ClassJobLevel > level;
     }
 
     private bool IsSyncAction(HotBarSlot* dataSlot)

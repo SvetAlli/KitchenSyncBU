@@ -6,7 +6,6 @@ using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using KitchenSync.Data;
-using Lumina.Excel.GeneratedSheets;
 using CommandManager = Dalamud.Game.Command.CommandManager;
 
 namespace KitchenSync;
@@ -27,6 +26,4 @@ internal class Service
     public static System.WindowManager WindowManager = null!;
     public static System.HotbarManager HotbarManager = null!;
     public static System.IconManager IconManager = null!;
-    public static System.LuminaCache<Action> ActionCache = null!;
-    public static System.LuminaCache<TerritoryType> TerritoryCache = null!;
 }
