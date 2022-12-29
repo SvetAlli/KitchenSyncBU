@@ -1,4 +1,5 @@
 ﻿using Dalamud.Plugin;
+using KamiLib;
 using KitchenSync.Commands;
 using KitchenSync.Data;
 using KitchenSync.System;
@@ -15,22 +16,22 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
     {
         pluginInterface.Create<Service>();
         
-        KamiLib.KamiLib.Initialize(pluginInterface, Name, () => Service.Configuration.Save());
+        KamiCommon.Initialize(pluginInterface, Name, () => Service.Configuration.Save());
         
         Service.Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Service.Configuration.Initialize(pluginInterface);
 
-        KamiLib.KamiLib.WindowManager.AddWindow(new ConfigurationWindow());
-        KamiLib.KamiLib.CommandManager.AddHandler(ShorthandCommand, "shorthand command to open configuration window");
-        KamiLib.KamiLib.CommandManager.AddCommand(new MainHotbarCommands());
-        KamiLib.KamiLib.CommandManager.AddCommand(new CrossHotbarCommands());
+        KamiCommon.WindowManager.AddWindow(new ConfigurationWindow());
+        KamiCommon.CommandManager.AddHandler(ShorthandCommand, "shorthand command to open configuration window");
+        KamiCommon.CommandManager.AddCommand(new MainHotbarCommands());
+        KamiCommon.CommandManager.AddCommand(new CrossHotbarCommands());
 
         Service.HotbarManager = new HotbarManager();
     }
 
     public void Dispose()
     {
-        KamiLib.KamiLib.Dispose();
+        KamiCommon.Dispose();
         
         Service.HotbarManager.Dispose();
     }

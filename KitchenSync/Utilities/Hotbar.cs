@@ -83,7 +83,7 @@ internal unsafe class Hotbar
     
     private bool IsRoleAction(HotBarSlot* dataSlot) => GetAdjustedAction(dataSlot->CommandId) is {IsRoleAction: true};
 
-    private Action? GetAdjustedAction(uint actionID) => ActionCache.Instance.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
+    private Action? GetAdjustedAction(uint actionID) => LuminaCache<Action>.Instance.GetRow(ActionManager.Instance()->GetAdjustedActionId(actionID));
 
     private bool IsExpandedHoldCommand() => IsHoldControlLtrt() || IsHoldControlRtlt();
 
@@ -99,7 +99,7 @@ internal unsafe class Hotbar
 
     private bool IsActionUnlocked(HotBarSlot* dataSlot)
     {
-        if (TerritoryTypeCache.Instance.GetRow(Service.ClientState.TerritoryType)?.TerritoryIntendedUse == 31) return true;
+        if (LuminaCache<TerritoryType>.Instance.GetRow(Service.ClientState.TerritoryType)?.TerritoryIntendedUse == 31) return true;
         
         var action = GetAdjustedAction(dataSlot->CommandId);
 

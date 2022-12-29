@@ -5,6 +5,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
+using KamiLib;
 using KamiLib.CommandSystem;
 using KamiLib.Configuration;
 using KamiLib.InfoBoxSystem;
@@ -23,7 +24,7 @@ internal class ConfigurationWindow : Window
     
     public ConfigurationWindow() : base("KitchenSync Configuration")
     {
-        KamiLib.KamiLib.CommandManager.AddCommand(new ConfigurationWindowCommands<ConfigurationWindow>());
+        KamiCommon.CommandManager.AddCommand(new ConfigurationWindowCommands<ConfigurationWindow>());
         
         tabBar.AddTab(new BaseOptionsTabItem());
         tabBar.AddTab(new RegularHotbarsTabItem());
