@@ -67,7 +67,7 @@ internal class ConfigurationWindow : Window
         ImGui.EndChild();
     }
     
-    private void DrawPreviews()
+    private static void DrawPreviews()
     {
         InfoBox.Instance
             .AddTitle("Default Available", 1.0f)
@@ -103,7 +103,7 @@ internal class ConfigurationWindow : Window
         Service.Configuration.Save();
     }
     
-    private void DrawVerticalLine()
+    private static void DrawVerticalLine()
     {
         var contentArea = ImGui.GetContentRegionAvail();
         var cursor = ImGui.GetCursorScreenPos();
@@ -113,7 +113,7 @@ internal class ConfigurationWindow : Window
         drawList.AddLine(cursor, cursor with {Y = cursor.Y + contentArea.Y}, color, 1.0f);
     }
     
-    private void DrawVersionNumber()
+    private static void DrawVersionNumber()
     {
         var assemblyInformation = Assembly.GetExecutingAssembly().FullName!.Split(',');
         var versionString = assemblyInformation[1].Replace('=', ' ');
