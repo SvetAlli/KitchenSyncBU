@@ -5,6 +5,7 @@ using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using KamiLib.ExceptionSafety;
 using KamiLib.Utilities;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
@@ -52,14 +53,10 @@ internal unsafe class HotbarManager : IDisposable
         hotbarUpdateHook!.Original(addon);
         if (Service.ClientState.IsPvP) return;
 
-        try
+        Safety.ExecuteSafe(() =>
         {
             UpdateHotbar(addon);
-        }
-        catch (Exception e)
-        {
-            PluginLog.Error(e, $"Something went wrong updating hotbar {new IntPtr(addon):X8}");
-        }
+        });
     }
 
     private byte OnCrossUpdate(AtkUnitBase* addon, IntPtr a2, byte a3)
@@ -67,15 +64,11 @@ internal unsafe class HotbarManager : IDisposable
         var result = crossHotbarUpdateHook!.Original(addon, a2, a3);
         if (Service.ClientState.IsPvP) return result;
 
-        try
+        Safety.ExecuteSafe(() =>
         {
             UpdateHotbar(addon);
-        }
-        catch (Exception e)
-        {
-            PluginLog.Error(e, $"Something went wrong updating hotbar {new IntPtr(addon):X8}");
-        }
-
+        });
+        
         return result;
     }
 
