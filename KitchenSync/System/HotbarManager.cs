@@ -5,9 +5,9 @@ using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using KamiLib.Utilities;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
-using GameMain = FFXIVClientStructs.FFXIV.Client.Game.GameMain;
 
 namespace KitchenSync.System;
 
@@ -83,9 +83,9 @@ internal unsafe class HotbarManager : IDisposable
     {
         var targetHotbar = hotbarList.FirstOrDefault(hotbar => hotbar.ActionBar == hotbarAddon);
 
-        if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name].Value)
+        if (targetHotbar != null && Settings.Hotbars[targetHotbar.Name])
         {
-            if (Settings.DisableInSanctuaries.Value && GameMain.IsInSanctuary())
+            if (Settings.DisableInSanctuaries && Condition.IsInSanctuary())
             {
                 targetHotbar.ResetTransparency();
             }
@@ -103,7 +103,7 @@ internal unsafe class HotbarManager : IDisposable
         foreach (var hotbar in hotbarList)
         {
             // If this hotbar is enabled
-            if (Settings.Hotbars[hotbar.Name].Value)
+            if (Settings.Hotbars[hotbar.Name])
             {
                 hotbar.ApplyTransparency(Settings.Transparency.Value);
             }

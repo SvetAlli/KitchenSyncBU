@@ -48,7 +48,7 @@ internal unsafe class Hotbar
         switch (hotbarSlot->CommandType)
         {
             case HotbarSlotType.Action when ShouldApplyTransparency(hotbarSlot):
-            case HotbarSlotType.Macro when Settings.IncludeMacros.Value && IsSyncMacroAction(hotbarSlot):
+            case HotbarSlotType.Macro when Settings.IncludeMacros && IsSyncMacroAction(hotbarSlot):
                 ApplyTransparencyToSlot(uiSlot, percentage);
                 break;
 
@@ -71,7 +71,7 @@ internal unsafe class Hotbar
         }
     }
 
-    private bool ShouldApplyTransparency(HotBarSlot* slot) => (!IsRoleAction(slot) && IsSyncAction(slot)) || (Settings.IncludeNotUnlocked.Value && !IsActionUnlocked(slot));
+    private bool ShouldApplyTransparency(HotBarSlot* slot) => (!IsRoleAction(slot) && IsSyncAction(slot)) || (Settings.IncludeNotUnlocked && !IsActionUnlocked(slot));
 
     private void ApplyTransparencyToSlot(ActionBarSlot* uiSlot, float percentage) => uiSlot->Icon->AtkResNode.Color.A = (byte)(0xFF * percentage);
 

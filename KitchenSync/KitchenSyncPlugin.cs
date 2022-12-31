@@ -21,7 +21,8 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         Service.Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Service.Configuration.Initialize(pluginInterface);
 
-        KamiCommon.WindowManager.AddWindow(new ConfigurationWindow());
+        KamiCommon.WindowManager.AddConfigurationWindow(new ConfigurationWindow());
+        
         KamiCommon.CommandManager.AddHandler(ShorthandCommand, "shorthand command to open configuration window");
         KamiCommon.CommandManager.AddCommand(new MainHotbarCommands());
         KamiCommon.CommandManager.AddCommand(new CrossHotbarCommands());

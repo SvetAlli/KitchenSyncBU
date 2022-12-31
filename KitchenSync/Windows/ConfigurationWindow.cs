@@ -5,8 +5,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
-using KamiLib;
-using KamiLib.CommandSystem;
 using KamiLib.Configuration;
 using KamiLib.InfoBoxSystem;
 using KamiLib.Utilities;
@@ -24,8 +22,6 @@ internal class ConfigurationWindow : Window
     
     public ConfigurationWindow() : base("KitchenSync Configuration")
     {
-        KamiCommon.CommandManager.AddCommand(new ConfigurationWindowCommands<ConfigurationWindow>());
-        
         tabBar.AddTab(new BaseOptionsTabItem());
         tabBar.AddTab(new RegularHotbarsTabItem());
         tabBar.AddTab(new CrossHotbarSelectionTabItem());
@@ -50,7 +46,7 @@ internal class ConfigurationWindow : Window
 
         if (ImGui.BeginChild("LeftSide", windowSize with {X = windowSize.X / 2.0f - 7.0f * ImGuiHelpers.GlobalScale}))
         {
-            ImGuiHelpers.ScaledDummy(30.0f);
+            ImGuiHelpers.ScaledDummy(23.0f);
             DrawPreviews();
             DrawVersionNumber();
         }
