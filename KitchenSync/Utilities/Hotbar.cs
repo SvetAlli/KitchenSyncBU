@@ -110,6 +110,8 @@ internal unsafe class Hotbar
 
     private bool IsSyncMacroAction(HotBarSlot* dataSlot)
     {
+        if (dataSlot->IconTypeA != HotbarSlotType.Action) return false;
+        
         var action = GetAdjustedAction(dataSlot->IconA);
         var level = Service.ClientState.LocalPlayer?.Level ?? 0;
 
