@@ -1,15 +1,15 @@
 {
   "Author": "MidoriKami",
-  "Name": "KitchenSync",
-  "Punchline": "When level sync'd, make skills you don't have access to more transparent",
-  "Description": "",
+  "Name": "Kitchen Sync",
+  "Punchline": "Make hotbar skills that you cant use transparent when sync'd",
+  "Description": "This plugin allows you to configure the transparency of hotbar skills that you can't use due to being sync'd or under-leveled.",
   "Tags": [
     "utility"
   ],
   "CategoryTags": [
-    "utility",
-    "ui"
+    "Utility",
+    "UI"
   ],
   "InternalName": "KitchenSync",
-  "RepoUrl": "https://github.com/MidoriKami/KitchenSync",
+  "RepoUrl": "https://github.com/MidoriKami/KitchenSync"
 }
