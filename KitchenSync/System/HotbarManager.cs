@@ -15,7 +15,7 @@ internal unsafe class HotbarManager : IDisposable
 {
     private delegate void HotbarUpdateDelegate(AtkUnitBase* addon);
 
-    private delegate byte CrossHotbarUpdateDelegate(AtkUnitBase* addon, IntPtr a2, byte a3);
+    private delegate byte CrossHotbarUpdateDelegate(AtkUnitBase* addon, nint a2, byte a3);
 
     [Signature("E8 ?? ?? ?? ?? 80 BB ?? ?? ?? ?? ?? 74 4C 80 BB", DetourName = nameof(OnHotbarUpdate))]
     private readonly Hook<HotbarUpdateDelegate>? hotbarUpdateHook = null;
@@ -58,7 +58,7 @@ internal unsafe class HotbarManager : IDisposable
         });
     }
 
-    private byte OnCrossUpdate(AtkUnitBase* addon, IntPtr a2, byte a3)
+    private byte OnCrossUpdate(AtkUnitBase* addon, nint a2, byte a3)
     {
         var result = crossHotbarUpdateHook!.Original(addon, a2, a3);
         if (Service.ClientState.IsPvP) return result;
