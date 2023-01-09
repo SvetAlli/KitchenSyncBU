@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using KamiLib.InfoBoxSystem;
+using KamiLib.Drawing;
 using KamiLib.Interfaces;
 using KitchenSync.Data;
 using KitchenSync.Utilities;

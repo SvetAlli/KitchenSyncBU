@@ -4,8 +4,8 @@ using System.Linq;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using KamiLib.ExceptionSafety;
-using KamiLib.Utilities;
+using KamiLib.GameState;
+using KamiLib.Hooking;
 using KitchenSync.Data;
 using KitchenSync.Utilities;
 
