@@ -105,7 +105,7 @@ internal unsafe class Hotbar
 
         if ( action is null or { UnlockLink: 0 } ) return true;
 
-        return UIState.Instance()->IsUnlockLinkUnlockedOrQuestCompleted(action.UnlockLink, 1);
+        return UIState.Instance()->IsUnlockLinkUnlockedOrQuestCompleted(action.UnlockLink);
     }
 
     private bool IsSyncMacroAction(HotBarSlot* dataSlot)
