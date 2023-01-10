@@ -17,7 +17,7 @@ internal unsafe class Hotbar
 
     public HotbarName Name { get; }
 
-    public AddonActionBarBase* ActionBar => (AddonActionBarBase*) Service.GameGui.GetAddonByName(Name.GetAddonName(), 1);
+    public AddonActionBarBase* ActionBar => (AddonActionBarBase*) Service.GameGui.GetAddonByName(Name.GetAddonName());
     private HotbarPointer* HotbarModule => Framework.Instance()->UIModule->GetRaptureHotbarModule()->HotBar[GetHotbarIndex()];
 
     public Hotbar(HotbarName name)
