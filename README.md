@@ -19,3 +19,8 @@ KitchenSync Modified Behavior seen below:
 
 ![image](https://user-images.githubusercontent.com/9083275/194432417-51cae775-cf14-40fc-9a85-ba2026c49d08.png)
 
+## Simple Configuration
+
+KitchenSync is intended to be very simple to use, a set-it-and-forget-it approach.
+
+![image](https://user-images.githubusercontent.com/9083275/220265243-e0051908-6f83-41ca-a966-067788c6b8fc.png)
