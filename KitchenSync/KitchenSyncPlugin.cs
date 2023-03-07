@@ -26,6 +26,7 @@ public sealed class KitchenSyncPlugin : IDalamudPlugin
         KamiCommon.CommandManager.AddHandler(ShorthandCommand, "shorthand command to open configuration window");
         KamiCommon.CommandManager.AddCommand(new MainHotbarCommands());
         KamiCommon.CommandManager.AddCommand(new CrossHotbarCommands());
+        KamiCommon.WindowManager.AddWindow(new InformationWindow());
 
         Service.HotbarManager = new HotbarManager();
     }
